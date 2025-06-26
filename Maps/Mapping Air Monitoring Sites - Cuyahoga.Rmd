@@ -94,45 +94,34 @@ ggplot() +
   geom_sf(data = target_counties, aes(fill = fill_color), color = "black", show.legend = FALSE) +
   geom_sf(data = lake_erie, fill = "#d9edff", color = NA, show.legend = FALSE) +
 
-  # EPA AQS Sites (red dots)
-  geom_point(data = epa_sites, aes(x = longitude, y = latitude, 
-                                   color = type, shape = type), 
-             size = 2, show.legend = TRUE) +
+  # EPA AQS Sites
+  geom_point(data = epa_sites, aes(x = longitude, y = latitude, color = type),
+             shape = 16, size = 2, show.legend = TRUE) +
 
-  # CLEANinCLE Sites (dark blue Xs)
-  geom_point(data = cleanincle_sites, aes(x = longitude, y = latitude, 
-                                          color = type, shape = type), 
-             size = 2, stroke = 1, show.legend = TRUE) +
+  # CLEANinCLE Sites
+  geom_point(data = cleanincle_sites, aes(x = longitude, y = latitude, color = type),
+             shape = 4, size = 2, stroke = 1, show.legend = TRUE) +
 
-  # Cleveland Boundary (purple outline)
-  geom_sf(data = cleveland_land, 
-          aes(color = type, shape = type), 
-          fill = NA, size = 1, show.legend = TRUE) +
+  # Cleveland Boundary — mapped only by color (no shape!)
+  geom_sf(data = cleveland_land, aes(color = type), 
+          linetype = 1, size = 1, fill = NA, show.legend = TRUE) +
 
+  # Labels
   geom_text(data = map_labels, aes(x = longitude, y = latitude, label = label),
             color = "black", size = 5, fontface = "italic") +
-  
-  # Legend appearance
+
+  # Color controls
   scale_color_manual(name = "Legend", 
                      values = c("EPA AQS Sites" = "red", 
                                 "CLEANinCLE Sites" = "darkblue",
                                 "Cleveland Boundary" = "purple")) +
 
-  scale_shape_manual(name = "Legend", 
-                     values = c("EPA AQS Sites" = 16, 
-                                "CLEANinCLE Sites" = 4,
-                                "Cleveland Boundary" = NA)) +
-
-  guides(
-    color = guide_legend(override.aes = list(
-      shape = c(16, 4, NA),
-      linetype = c(0, 0, 1),
-      size = c(2, 2, 1)
-    )),
-    shape = guide_legend(override.aes = list(
-      color = c("red", "darkblue", "purple")
-    ))
-  ) +
+  # Combine symbols in one legend
+  guides(color = guide_legend(override.aes = list(
+    shape = c(16, 4, NA),
+    linetype = c(0, 0, 1),
+    size = c(2, 2, 1)
+  ))) +
 
   scale_fill_identity() +
   coord_sf(xlim = c(-82.1, -81.3), ylim = c(41.27, 41.65)) +
@@ -143,6 +132,65 @@ ggplot() +
         axis.ticks = element_blank(),
         axis.title = element_blank())
 
+
+# ggplot() +
+#   geom_sf(data = target_counties, aes(fill = fill_color), color = "black", show.legend = FALSE) +
+#   geom_sf(data = lake_erie, fill = "#d9edff", color = NA, show.legend = FALSE) +
+# 
+#   # EPA AQS Sites (red dots)
+#   geom_point(data = epa_sites, aes(x = longitude, y = latitude, 
+#                                    color = type, shape = type), 
+#              size = 2, show.legend = TRUE) +
+# 
+#   # CLEANinCLE Sites (dark blue Xs)
+#   geom_point(data = cleanincle_sites, aes(x = longitude, y = latitude, 
+#                                           color = type, shape = type), 
+#              size = 2, stroke = 1, show.legend = TRUE) +
+# 
+#   # Cleveland Boundary (purple outline)
+#   geom_sf(data = cleveland_land, 
+#           aes(color = type, linetype = type), 
+#           fill = NA, size = 1, show.legend = TRUE) +
+# 
+#   geom_text(data = map_labels, aes(x = longitude, y = latitude, label = label),
+#             color = "black", size = 5, fontface = "italic") +
+#   
+#   # Legend appearance
+#   scale_color_manual(name = "Legend", 
+#                      values = c("EPA AQS Sites" = "red", 
+#                                 "CLEANinCLE Sites" = "darkblue",
+#                                 "Cleveland Boundary" = "purple")) +
+# 
+#   scale_shape_manual(name = "Legend", 
+#                      values = c("EPA AQS Sites" = 16, 
+#                                 "CLEANinCLE Sites" = 4,
+#                                 "Cleveland Boundary" = NA)) +
+# 
+#   scale_linetype_manual(name = "Legend", 
+#                       values = c("EPA AQS Sites" = 0, 
+#                                  "CLEANinCLE Sites" = 0,
+#                                  "Cleveland Boundary" = 1))
+# 
+#   guides(
+#     color = guide_legend(override.aes = list(
+#       shape = c(16, 4, NA),
+#       linetype = c(0, 0, 1),
+#       size = c(2, 2, 1)
+#     ))
+# #    shape = guide_legend(override.aes = list(
+# #      color = c("red", "darkblue", "purple")
+# #    ))
+#   ) +
+# 
+#   scale_fill_identity() +
+#   coord_sf(xlim = c(-82.1, -81.3), ylim = c(41.27, 41.65)) +
+#   theme_minimal() +
+#   theme(panel.grid = element_blank(),
+#         panel.background = element_rect(fill = "white", color = NA),
+#         axis.text = element_blank(),
+#         axis.ticks = element_blank(),
+#         axis.title = element_blank())
+# 
 
 # Saving the output graphs as images in different formats
 

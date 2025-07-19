@@ -20,7 +20,7 @@ library(readr)
 aqs_credentials(username = "rnl34@case.edu", key = "copperhawk19")
 
 # Vector of site numbers 
-site_numbers <- c("0034", "0038", "0045", "0060", "0065")  
+site_numbers <- c("0034", "0038", "0045", "0060", "0065", "0073")  
 
 # Define date range
 start_date <- as.Date("2024-11-01")
@@ -155,7 +155,7 @@ library(dplyr)
 library(lubridate)
 
 # Vector of site numbers
-site_numbers <- c("0034", "0038", "0045", "0060", "0065")
+site_numbers <- c("0034", "0038", "0045", "0060", "0065, 0072")
 
 # Read and combine all 24-hour data files
 epa_24hr_clean <- bind_rows(
@@ -204,7 +204,7 @@ na_counts_24hr <- sort(na_counts_24hr, decreasing = TRUE)
 # View NA count result
 na_counts_24hr
 
-# Step 6: Identify mostly NA columns
+# Identify mostly NA columns
 
 n_rows_24hr <- nrow(epa_24hr_clean)
 
@@ -1013,12 +1013,410 @@ print(closest_matches)
 write_csv(closest_matches, "epa_closest_cleanincle_devices.csv")
 
 ```
+```{r}
+# Load required libraries
+library(dplyr)
+library(readr)
+library(geosphere)
+library(lubridate)
+
+# -------- STEP 1: Combine and Save EPA Site Data --------
+# Assumes 'epa_data_list' contains your list of 5 EPA site data frames
+epa_all_data <- bind_rows(epa_data_list, .id = "site_number")
+write_csv(epa_all_data, "epa_pm25_site_combined.csv")
+
+# -------- STEP 2: Load EPA and CLEANinCLE Datasets --------
+epa_data <- read_csv("epa_pm25_site_combined.csv")
+cleanincle_data <- read_csv("CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# -------- STEP 3: Extract Unique Site Coordinates --------
+epa_sites <- epa_data %>%
+  select(site_number, latitude, longitude) %>%
+  distinct()
+
+cleanincle_sites <- cleanincle_data %>%
+  select(location_name, device_number, device_eui, latitude, longitude) %>%
+  distinct()
+
+# -------- STEP 4: Compute Pairwise Distances --------
+distance_table <- expand.grid(
+  epa_site = epa_sites$site_number,
+  cleancle_device = cleanincle_sites$device_number
+) %>%
+  left_join(epa_sites, by = c("epa_site" = "site_number")) %>%
+  left_join(cleanincle_sites, by = c("cleancle_device" = "device_number")) %>%
+  mutate(
+    distance_km = distHaversine(
+      cbind(longitude.x, latitude.x),
+      cbind(longitude.y, latitude.y)
+    ) / 1000
+  )
+
+# -------- STEP 5: Find Closest Device to Each EPA Site --------
+closest_matches <- distance_table %>%
+  group_by(epa_site) %>%
+  slice_min(distance_km, n = 1) %>%
+  ungroup() %>%
+  select(
+    epa_site,
+    epa_lat = latitude.x,
+    epa_lon = longitude.x,
+    cleancle_location = location_name,
+    device_number = cleancle_device,
+    device_eui,
+    cleancle_lat = latitude.y,
+    cleancle_lon = longitude.y,
+    distance_km
+  )
+
+# -------- STEP 6: Preprocess Daily Averages --------
+epa_daily <- epa_data %>%
+  mutate(date = as.Date(date_local)) %>%
+  select(site_number, date, epa_pm25 = sample_measurement)
+
+cleanincle_daily <- cleanincle_data %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(cleanincle_pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+# -------- STEP 7: Compute R² for Each Closest Match --------
+closest_matches_with_r2 <- closest_matches %>%
+  rowwise() %>%
+  mutate(
+    r_squared = {
+      epa_vals <- epa_daily %>% filter(site_number == epa_site)
+      clean_vals <- cleanincle_daily %>% filter(device_number == device_number)
+      joined <- inner_join(epa_vals, clean_vals, by = "date")
+      if (nrow(joined) >= 10 && sd(joined$epa_pm25, na.rm = TRUE) > 0 && sd(joined$cleanincle_pm25, na.rm = TRUE) > 0) {
+        summary(lm(epa_pm25 ~ cleanincle_pm25, data = joined))$r.squared
+      } else {
+        NA_real_
+      }
+    }
+  ) %>%
+  ungroup()
+
+# -------- STEP 8: View and Save Final Table --------
+print(closest_matches_with_r2)
+write_csv(closest_matches_with_r2, "epa_closest_cleanincle_devices_with_r2.csv")
+
+```
 
 
 ```{r}
+# Load required libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(geosphere)
+
+cleanincle_wide <- cleanincle_data %>%
+  filter(device_number %in% top_devices) %>%
+  group_by(device_number, time) %>%
+  summarise(pm25 = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = device_number, values_from = pm25)
+
+# Get coordinates for those devices
+coords <- cleanincle_data %>%
+  filter(device_number %in% selected_devices) %>%
+  select(device_number, latitude, longitude) %>%
+  distinct()
+
+# Compute pairwise R² and distance
+results <- list()
+
+device_ids <- colnames(cleanincle_wide)[-1]  # exclude 'date'
+
+for (i in seq_along(device_ids)) {
+  for (j in (i+1):length(device_ids)) {
+    dev1 <- device_ids[i]
+    dev2 <- device_ids[j]
+    
+    # Subset the data
+    df_pair <- cleanincle_wide %>%
+      select(x = all_of(dev1), y = all_of(dev2)) %>%
+      filter(!is.na(x) & !is.na(y))
+    
+    # Calculate R²
+    r2_val <- if (nrow(df_pair) > 2) {
+      summary(lm(y ~ x, data = df_pair))$r.squared
+    } else {
+      NA
+    }
+    
+    # Get distance
+    coords1 <- coords %>% filter(device_number == dev1)
+    coords2 <- coords %>% filter(device_number == dev2)
+    
+    dist_km <- distHaversine(
+      cbind(coords1$longitude, coords1$latitude),
+      cbind(coords2$longitude, coords2$latitude)
+    ) / 1000
+    
+    # Store result
+    results[[length(results) + 1]] <- data.frame(
+      device1 = dev1,
+      device2 = dev2,
+      r_squared = r2_val,
+      distance_km = dist_km
+    )
+  }
+}
+
+# Combine all results
+r2_distance_df <- bind_rows(results)
+
+# --- Step 5: Plot R² vs Distance
+ggplot(r2_distance_df, aes(x = distance_km, y = r_squared)) +
+  geom_point(color = "darkgreen", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+  labs(
+    title = "Relationship Between Sensor Distance and Agreement (R²)",
+    x = "Distance Between Devices (km)",
+    y = "R² (Agreement in PM2.5 Readings)"
+  ) +
+  theme_minimal(base_size = 13)
 
 
 ```
 
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(readr)
+
+# Load the data
+data <- read_csv("epa_closest_cleanincle_devices_with_r2.csv")
+
+# Plot R² vs. distance
+ggplot(data, aes(x = distance_km, y = r_squared)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = TRUE, linetype = "dashed", color = "blue") +
+  geom_text(aes(label = paste0("EPA ", epa_site, "\nDevice ", device_number)),
+            vjust = -0.5, size = 3) +
+  labs(
+    title = "R² Between EPA and CLEANinCLE Sensor Readings vs. Distance",
+    x = "Distance (km)",
+    y = expression(R^2)
+  ) +
+  theme_minimal()
+```
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(gridExtra)
+
+# Load data
+epa_data <- read_csv("epa_pm25_site_combined.csv")
+cleanincle_data <- read_csv("CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# Clean and prepare EPA daily data
+epa_daily <- epa_data %>%
+  select(site_number, date_local, sample_measurement) %>%
+  mutate(date = as.Date(date_local)) %>%
+  group_by(site_number, date) %>%
+  summarise(epa_pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop")
+
+# Clean and prepare CLEANinCLE daily data
+cleanincle_daily <- cleanincle_data %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(clean_pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+# Define EPA–CLEANinCLE pairs
+pairs <- data.frame(
+  epa_site = c("0034", "0038", "0045", "0060", "0060", "0065"),
+  clean_device = c(24, 7, 5, 17, 177, 8)
+)
+
+# Create a list of plots, skipping any pair with no data
+plots <- list()
+
+for (i in 1:nrow(pairs)) {
+  epa_id <- pairs$epa_site[i]
+  cin_id <- pairs$clean_device[i]
+
+  epa_subset <- epa_daily %>% filter(site_number == epa_id)
+  cin_subset <- cleanincle_daily %>% filter(device_number == cin_id)
+
+  merged <- inner_join(epa_subset, cin_subset, by = "date")
+
+  if (nrow(merged) == 0 || all(is.na(merged$epa_pm25)) || all(is.na(merged$clean_pm25))) {
+    message(paste("Skipping EPA", epa_id, "and CinC", cin_id, "- no overlap"))
+    next
+  }
+
+  r2 <- summary(lm(clean_pm25 ~ epa_pm25, data = merged))$r.squared
+  label <- paste0("R² = ", round(r2, 3))
+
+  p <- ggplot(merged, aes(x = epa_pm25, y = clean_pm25)) +
+    geom_point(color = "steelblue", alpha = 0.7) +
+    geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+    labs(
+      title = paste0("EPA ", epa_id, " vs. CinC ", cin_id),
+      x = "EPA 24-hr PM2.5 (µg/m³)",
+      y = "CLEANinCLE 24-hr PM2.5 (µg/m³)",
+      caption = label
+    ) +
+    theme_minimal(base_size = 12)
+
+  plots[[length(plots) + 1]] <- p
+}
+
+# Save all generated plots to PDF
+if (length(plots) > 0) {
+  pdf("EPA_CinC_R2_Plots.pdf", width = 9, height = 12)
+  for (p in plots) print(p)
+  dev.off()
+} else {
+  message("No plots generated. Check sensor ID matches and data ranges.")
+}
+```
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(gridExtra)
+
+# Load data
+epa_data <- read_csv("epa_pm25_site_combined.csv")
+cleanincle_data <- read_csv("CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# Prepare daily averages
+epa_daily <- epa_data %>%
+  select(site_number, date_local, sample_measurement) %>%
+  mutate(date = as.Date(date_local)) %>%
+  group_by(site_number, date) %>%
+  summarise(epa_pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop")
+
+cleanincle_daily <- cleanincle_data %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(clean_pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+# Define EPA–CLEANinCLE pairs
+pairs <- data.frame(
+  epa_site = c("0034", "0038", "0045", "0060", "0060", "0065"),
+  clean_device = c(24, 7, 5, 17, 177, 8)
+)
+
+# Generate list of plots
+plot_list <- lapply(1:nrow(pairs), function(i) {
+  epa_id <- pairs$epa_site[i]
+  cin_id <- pairs$clean_device[i]
+
+  epa_subset <- epa_daily %>% filter(site_number == epa_id)
+  cin_subset <- cleanincle_daily %>% filter(device_number == cin_id)
+
+  merged <- inner_join(epa_subset, cin_subset, by = "date")
+
+  if (nrow(merged) >= 2) {
+    r2 <- summary(lm(clean_pm25 ~ epa_pm25, data = merged))$r.squared
+    r2_label <- paste0("R² = ", round(r2, 3))
+
+    ggplot(merged, aes(x = epa_pm25, y = clean_pm25)) +
+      geom_point(color = "steelblue", alpha = 0.7) +
+      geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+      labs(
+        title = paste0("EPA ", epa_id, " vs. CinC ", cin_id),
+        x = "EPA 24-hr PM2.5 (µg/m³)",
+        y = "CLEANinCLE 24-hr PM2.5 (µg/m³)",
+        caption = r2_label
+      ) +
+      theme_minimal(base_size = 12)
+  } else {
+    NULL
+  }
+})
+
+# Remove any NULL plots (in case of missing data)
+plot_list <- Filter(Negate(is.null), plot_list)
+
+# Save to one high-resolution PDF
+pdf("epa_cleanincle_comparison_plots.pdf", width = 14, height = 10)  # 2 columns layout
+grid.arrange(grobs = plot_list, ncol = 2)
+dev.off()
+
+```
+
+
+
+```{r}
+unique(cleanincle_daily$device_number)
+
+```
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(gridExtra)
+
+# --- Load data ---
+epa_data <- read_csv("epa_pm25_site_combined.csv")
+cleanincle_data <- read_csv("CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# --- Prepare daily averaged EPA data ---
+epa_daily <- epa_data %>%
+  select(site_number, date_local, sample_measurement) %>%
+  mutate(date = as.Date(date_local)) %>%
+  group_by(site_number, date) %>%
+  summarise(epa_pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop")
+
+# --- Prepare daily averaged CLEANinCLE data ---
+cleanincle_daily <- cleanincle_data %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(clean_pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+# --- Define EPA–CLEANinCLE pairs with display labels ---
+pairs <- data.frame(
+  epa_site = c("0034", "0038", "0045", "0060", "0060", "0065"),
+  clean_device = c(24, 7, 5, 17, 17, 8),
+  label = c("24", "7", "5", "17a", "17b", "8")
+)
+
+# --- Generate plots for each pair ---
+plots <- lapply(1:nrow(pairs), function(i) {
+  epa_id <- pairs$epa_site[i]
+  cin_id <- pairs$clean_device[i]
+  cin_label <- pairs$label[i]
+
+  epa_subset <- epa_daily %>% filter(site_number == epa_id)
+  cin_subset <- cleanincle_daily %>% filter(device_number == cin_id)
+
+  merged <- inner_join(epa_subset, cin_subset, by = "date")
+
+  if (nrow(merged) == 0) return(NULL)
+
+  r2 <- summary(lm(clean_pm25 ~ epa_pm25, data = merged))$r.squared
+  label <- paste0("R² = ", round(r2, 3))
+
+  ggplot(merged, aes(x = epa_pm25, y = clean_pm25)) +
+    geom_point(color = "steelblue", alpha = 0.7) +
+    geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+    labs(
+      title = paste0("EPA ", epa_id, " vs. CinC ", cin_label),
+      x = "EPA 24-hr PM2.5 (µg/m³)",
+      y = "CLEANinCLE 24-hr PM2.5 (µg/m³)",
+      caption = label
+    ) +
+    theme_minimal(base_size = 12)
+})
+
+# Remove any NULL plots if any pairing had no overlap
+plots <- Filter(Negate(is.null), plots)
+
+# --- Save all 6 plots in a single high-res side-by-side PDF ---
+pdf("epa_cleanincle_r2_plots.pdf", width = 16, height = 10)
+grid.arrange(grobs = plots, ncol = 3)
+dev.off()
+```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,712 @@
+---
+title: "EPA progress"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  Site 0034
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0034 
+df_0034 <- read_csv("epa_pm25_site_0034.csv")
+
+# Preview structure
+glimpse(df_0034)
+
+# Select only 24-hour data
+df_0034_24hr <- df_0034 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0034F = sample_measurement)
+
+# Preview
+head(df_0034_24hr)
+
+# Average duplicate entries by date
+df_0034_24hr <- df_0034_24hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0034F = mean(PM25_0034F, na.rm = TRUE), .groups = "drop")
+
+# Select only 1-hour data
+df_0034_1hr <- df_0034 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0034H = sample_measurement)
+
+head(df_0034_1hr)
+
+# Daily averages from the 1-hour data
+df_0034_1hr_avg <- df_0034_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0034H = mean(PM25_0034H, na.rm = TRUE), .groups = "drop")
+
+```
+
+## Site 0038
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0038
+df_0038 <- read_csv("epa_pm25_site_0038.csv")
+
+# Preview structure
+glimpse(df_0038)
+
+# Filter only 24-hour data
+df_0038_24hr <- df_0038 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0038F = sample_measurement)
+
+# Preview
+head(df_0038_24hr)
+
+# Average duplicate entries by date
+df_0038_24hr <- df_0038 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0038F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0038F = mean(PM25_0038F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0038_1hr <- df_0038 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0038H = sample_measurement)
+
+head(df_0038_1hr)
+
+# Daily averages from the 1-hour data
+df_0038_1hr_avg <- df_0038_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0038H = mean(PM25_0038H, na.rm = TRUE), .groups = "drop")
+```
+
+
+## Site 0045
+```{r}
+
+# Load required library
+library(readr)
+library(dplyr)
+
+# Read in Site 0045
+df_0045 <- read_csv("epa_pm25_site_0045.csv")
+
+# Preview structure
+glimpse(df_0045)
+
+# Filter only 24-hour data
+df_0045_24hr <- df_0045 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0045F = sample_measurement)
+
+head(df_0045_24hr)
+
+# Average duplicate entries by date
+df_0045_24hr <- df_0045 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0045F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0045F = mean(PM25_0045F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0045_1hr <- df_0045 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0045H = sample_measurement)
+
+head(df_0045_1hr)
+
+# Daily averages from the 1-hour data
+df_0045_1hr_avg <- df_0045_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0045H = mean(PM25_0045H, na.rm = TRUE), .groups = "drop")
+```
+
+
+## Site 0060
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0060 separately
+df_0060 <- read_csv("epa_pm25_site_0060.csv")
+
+# Preview structure
+glimpse(df_0060)
+
+# Filter only 24-hour data
+df_0060_24hr <- df_0060 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0060F = sample_measurement)
+
+head(df_0060_24hr)
+
+# Average duplicate entries by date
+df_0060_24hr <- df_0060 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0060F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0060F = mean(PM25_0060F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0060_1hr <- df_0060 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0060H = sample_measurement)
+
+head(df_0060_1hr)
+
+# Daily averages from the 1-hour data
+df_0060_1hr_avg <- df_0060_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0060H = mean(PM25_0060H, na.rm = TRUE), .groups = "drop")
+```
+
+## Site 0065
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0065 separately
+df_0065 <- read_csv("epa_pm25_site_0065.csv")
+
+# Preview structure
+glimpse(df_0065)
+
+# Filter only 24-hour data
+df_0065_24hr <- df_0065 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0065F = sample_measurement)
+
+head(df_0065_24hr)
+
+# Average duplicate entries by date
+
+df_0065_24hr <- df_0065 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0065F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0065F = mean(PM25_0065F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0065_1hr <- df_0065 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0065H = sample_measurement)
+
+head(df_0065_1hr)
+
+# Daily averages from the 1-hour data
+df_0065_1hr_avg <- df_0065_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0065H = mean(PM25_0065H, na.rm = TRUE), .groups = "drop")
+```
+
+## Site 0073
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Read in Site 0073
+df_0073 <- read_csv("epa_pm25_site_0073.csv")
+
+# Preview structure
+glimpse(df_0073)
+
+# Filter only 24-hour data
+df_0073_24hr <- df_0073 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0073F = sample_measurement)
+
+head(df_0073_24hr)
+
+# Average duplicate entries by date
+
+df_0073_24hr <- df_0073 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0073F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0073F = mean(PM25_0073F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0073_1hr <- df_0073 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0073H = sample_measurement)
+
+head(df_0073_1hr)
+
+# Daily averages from the 1-hour data
+df_0073_1hr_avg <- df_0073_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0073H = mean(PM25_0073H, na.rm = TRUE), .groups = "drop")
+
+
+```
+
+## Combine all 24-hour dataframes into one master dataframe by date
+```{r}
+library(purrr)
+library(purrr)  # <-- add this if not already loaded
+
+df_filter_all <- reduce(
+  list(df_0034_24hr, df_0038_24hr, df_0045_24hr, df_0060_24hr, df_0065_24hr, df_0073_24hr),
+  full_join,
+  by = "date_local"
+)
+
+head(df_filter_all)
+```
+
+## Combine all 1-hour dataframes into one dataframe by date
+```{r}
+df_hourly_all <- reduce(
+  list(df_0034_1hr_avg, df_0038_1hr_avg, df_0045_1hr_avg, df_0060_1hr_avg, df_0065_1hr_avg, df_0073_1hr_avg),
+  full_join,
+  by = "date_local"
+)
+
+head(df_hourly_all)
+```
+
+# list of all dates
+```{r}
+library(dplyr)
+library(tibble)
+library(purrr)
+
+# Replace with the actual full date range in your data
+all_dates <- tibble(date_local = seq.Date(
+  from = as.Date("2024-11-01"),
+  to = as.Date("2025-05-31"),
+  by = "day"
+))
+
+# Site 0034
+df_0034_24hr_full <- left_join(all_dates, df_0034_24hr, by = "date_local")
+df_0034_1hr_full  <- left_join(all_dates, df_0034_1hr,  by = "date_local")
+
+# Site 0038
+df_0038_24hr_full <- left_join(all_dates, df_0038_24hr, by = "date_local")
+df_0038_1hr_full  <- left_join(all_dates, df_0038_1hr,  by = "date_local")
+
+# Site 0045
+df_0045_24hr_full <- left_join(all_dates, df_0045_24hr, by = "date_local")
+df_0045_1hr_full  <- left_join(all_dates, df_0045_1hr,  by = "date_local")
+
+# Site 0060
+df_0060_24hr_full <- left_join(all_dates, df_0060_24hr, by = "date_local")
+df_0060_1hr_full  <- left_join(all_dates, df_0060_1hr,  by = "date_local")
+
+# Site 0065
+df_0065_24hr_full <- left_join(all_dates, df_0065_24hr, by = "date_local")
+df_0065_1hr_full  <- left_join(all_dates, df_0065_1hr,  by = "date_local")
+
+# Site 0073
+df_0073_24hr_full <- left_join(all_dates, df_0073_24hr, by = "date_local")
+df_0073_1hr_full  <- left_join(all_dates, df_0073_1hr,  by = "date_local")
+
+
+```
+
+#
+
+```{r}
+
+library(dplyr)
+
+df_combined <- all_dates %>%
+  left_join(df_0034_24hr,    by = "date_local") %>%
+  left_join(df_0034_1hr_avg, by = "date_local") %>%
+  left_join(df_0038_24hr,    by = "date_local") %>%
+  left_join(df_0038_1hr_avg, by = "date_local") %>%
+  left_join(df_0045_24hr,    by = "date_local") %>%
+  left_join(df_0045_1hr_avg, by = "date_local") %>%
+  left_join(df_0060_24hr,    by = "date_local") %>%
+  left_join(df_0060_1hr_avg, by = "date_local") %>%
+  left_join(df_0065_24hr,    by = "date_local") %>%
+  left_join(df_0065_1hr_avg, by = "date_local") %>%
+  left_join(df_0073_24hr,    by = "date_local") %>%
+  left_join(df_0073_1hr_avg, by = "date_local")
+
+# result
+glimpse(df_combined)
+summary(df_combined)
+  
+```
+
+```{r}
+library(ggplot2)
+
+# Plot for Site 0034
+ggplot(df_combined, aes(x = PM25_0034F, y = PM25_0034H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0034: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Plot for Site 0038
+ggplot(df_combined, aes(x = PM25_0038F, y = PM25_0038H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0038: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Plot for Site 0045
+ggplot(df_combined, aes(x = PM25_0045F, y = PM25_0045H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0045: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Plot for Site 0060
+ggplot(df_combined, aes(x = PM25_0060F, y = PM25_0060H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0060: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Plot for Site 0065
+ggplot(df_combined, aes(x = PM25_0065F, y = PM25_0065H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0065: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Plot for Site 0073
+ggplot(df_combined, aes(x = PM25_0073F, y = PM25_0073H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Site 0073: Filter vs. Hourly Average PM2.5",
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
+  theme_minimal()
+```
+
+```{r}
+library(ggplot2)
+
+# Calculate R² for Site 0034
+r_squared_0034 <- summary(lm(PM25_0034H ~ PM25_0034F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0034F, y = PM25_0034H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0034: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0034, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Calculate R² for Site 0038
+r_squared_0038 <- summary(lm(PM25_0038H ~ PM25_0038F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0038F, y = PM25_0038H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0038: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0038, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Calculate R² for Site 0045
+r_squared_0045 <- summary(lm(PM25_0045H ~ PM25_0045F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0045F, y = PM25_0045H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0045: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0045, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Calculate R² for Site 0060
+r_squared_0060 <- summary(lm(PM25_0060H ~ PM25_0060F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0060F, y = PM25_0060H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0060: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0060, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Calculate R² for Site 0065
+r_squared_0065 <- summary(lm(PM25_0065H ~ PM25_0065F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0065F, y = PM25_0065H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0065: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0065, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
+  theme_minimal()
+
+# Calculate R² for Site 0073
+r_squared_0073 <- summary(lm(PM25_0073H ~ PM25_0073F, data = df_combined))$r.squared
+
+ggplot(df_combined, aes(x = PM25_0073F, y = PM25_0073H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  labs(
+    title = paste0("Site 0073: Hourly Avg PM2.5  vs. Filter (R² = ", round(r_squared_0073, 2), ")"),
+    x = "24-Hour Filter PM2.5 (µg/m³)",
+    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
+  scale_y_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
+  theme_minimal()
+
+```
+
+```{r}
+# Combine all 24-hour filter data
+df_combined_24hr <- all_dates %>%
+  left_join(df_0034_24hr, by = "date_local") %>%
+  left_join(df_0038_24hr, by = "date_local") %>%
+  left_join(df_0045_24hr, by = "date_local") %>%
+  left_join(df_0060_24hr, by = "date_local") %>%
+  left_join(df_0065_24hr, by = "date_local") %>%
+  left_join(df_0073_24hr, by = "date_local")
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(purrr)
+
+# Step 1: Get only filter PM columns
+filter_columns <- names(df_combined_24hr)[str_detect(names(df_combined_24hr), "_F")]
+
+# Step 2: All unique site pairs (including self-pairs)
+site_pairs <- expand.grid(Site1 = filter_columns, Site2 = filter_columns, stringsAsFactors = FALSE) %>%
+  filter(Site1 <= Site2)
+
+# Step 3: R2 calculation function
+get_r2 <- function(col1, col2, data) {
+  df_pair <- data %>%
+    select(all_of(c(col1, col2))) %>%
+    drop_na()
+  if (nrow(df_pair) < 2) return(NA)
+  summary(lm(df_pair[[col2]] ~ df_pair[[col1]]))$r.squared
+}
+
+# Step 4: Compute R2 values for all pairs
+r2_table <- map2_dfr(site_pairs$Site1, site_pairs$Site2, function(c1, c2) {
+  tibble(
+    Site1 = str_remove(c1, "PM25_") %>% str_remove("F"),
+    Site2 = str_remove(c2, "PM25_") %>% str_remove("F"),
+    R2 = get_r2(c1, c2, df_combined_24hr)
+  )
+})
+
+# Step 5: Merge with distance data
+r2_with_distance <- left_join(r2_table, site_distances, by = c("Site1", "Site2"))
+
+# View final merged table
+print(r2_with_distance)
+
+```
+
+
+
+
+
+```{r}
+# Load libraries
+library(dplyr)
+library(geosphere)  # For distHaversine
+library(tidyr)
+
+# Create a dataframe with site IDs and their coordinates
+site_coords <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Latitude = c(mean(df_0034$latitude, na.rm = TRUE),
+               mean(df_0038$latitude, na.rm = TRUE),
+               mean(df_0045$latitude, na.rm = TRUE),
+               mean(df_0060$latitude, na.rm = TRUE),
+               mean(df_0065$latitude, na.rm = TRUE),
+               mean(df_0073$latitude, na.rm = TRUE)),
+  Longitude = c(mean(df_0034$longitude, na.rm = TRUE),
+                mean(df_0038$longitude, na.rm = TRUE),
+                mean(df_0045$longitude, na.rm = TRUE),
+                mean(df_0060$longitude, na.rm = TRUE),
+                mean(df_0065$longitude, na.rm = TRUE),
+                mean(df_0073$longitude, na.rm = TRUE))
+)
+
+# Create a distance matrix (in km) using geosphere::distHaversine
+distance_matrix <- outer(
+  1:nrow(site_coords), 
+  1:nrow(site_coords), 
+  Vectorize(function(i, j) {
+    distHaversine(site_coords[i, c("Longitude", "Latitude")], 
+                  site_coords[j, c("Longitude", "Latitude")]) / 1000  # Convert to km
+  })
+)
+
+# Add row and column names
+rownames(distance_matrix) <- site_coords$Site
+colnames(distance_matrix) <- site_coords$Site
+
+# Convert to long format (including self-pairs)
+site_distances <- as.data.frame(as.table(distance_matrix)) %>%
+  rename(Site1 = Var1, Site2 = Var2, Distance_km = Freq) %>%
+  mutate(
+    Site1 = as.character(Site1),
+    Site2 = as.character(Site2)
+  )
+
+# View result
+print(site_distances)
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Loop over each site and create a separate plot
+unique_sites <- unique(c(r2_vs_distance$Site1, r2_vs_distance$Site2))
+
+for (this_site in unique_sites) {
+  # Filter R² values where the site is involved
+  plot_data <- r2_vs_distance %>%
+    filter(Site1 == this_site | Site2 == this_site) %>%
+    mutate(
+      OtherSite = ifelse(Site1 == this_site, Site2, Site1)
+    )
+
+  # Plot
+  p <- ggplot(plot_data, aes(x = Distance_km, y = R2, label = OtherSite)) +
+    geom_point(color = "steelblue", size = 3) +
+    geom_text(vjust = -0.8, size = 3) +
+    geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "red") +
+    labs(
+      title = paste("R² vs. Distance: Site", this_site),
+      x = "Distance to Other Site (km)",
+      y = paste("R² with Site", this_site)
+    ) +
+    theme_minimal()
+
+  print(p)  # show the plot
+}
+
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

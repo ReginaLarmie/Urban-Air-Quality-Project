@@ -30,7 +30,7 @@ df_0034_24hr <- df_0034 %>%
 head(df_0034_24hr)
 
 # Average duplicate entries by date
-df_0034_24hr <- df_0034_24hr %>%
+df_0034_24hr_avg <- df_0034_24hr %>%
   group_by(date_local) %>%
   summarise(PM25_0034F = mean(PM25_0034F, na.rm = TRUE), .groups = "drop")
 
@@ -71,7 +71,7 @@ df_0038_24hr <- df_0038 %>%
 head(df_0038_24hr)
 
 # Average duplicate entries by date
-df_0038_24hr <- df_0038 %>%
+df_0038_24hr_avg <- df_0038 %>%
   filter(sample_duration == "24 HOUR") %>%
   select(date_local, sample_measurement) %>%
   rename(PM25_0038F = sample_measurement) %>%
@@ -115,7 +115,7 @@ df_0045_24hr <- df_0045 %>%
 head(df_0045_24hr)
 
 # Average duplicate entries by date
-df_0045_24hr <- df_0045 %>%
+df_0045_24hr_avg <- df_0045 %>%
   filter(sample_duration == "24 HOUR") %>%
   select(date_local, sample_measurement) %>%
   rename(PM25_0045F = sample_measurement) %>%
@@ -158,7 +158,7 @@ df_0060_24hr <- df_0060 %>%
 head(df_0060_24hr)
 
 # Average duplicate entries by date
-df_0060_24hr <- df_0060 %>%
+df_0060_24hr_avg <- df_0060 %>%
   filter(sample_duration == "24 HOUR") %>%
   select(date_local, sample_measurement) %>%
   rename(PM25_0060F = sample_measurement) %>%
@@ -201,7 +201,7 @@ head(df_0065_24hr)
 
 # Average duplicate entries by date
 
-df_0065_24hr <- df_0065 %>%
+df_0065_24hr_avg <- df_0065 %>%
   filter(sample_duration == "24 HOUR") %>%
   select(date_local, sample_measurement) %>%
   rename(PM25_0065F = sample_measurement) %>%
@@ -244,7 +244,7 @@ head(df_0073_24hr)
 
 # Average duplicate entries by date
 
-df_0073_24hr <- df_0073 %>%
+df_0073_24hr_avg <- df_0073 %>%
   filter(sample_duration == "24 HOUR") %>%
   select(date_local, sample_measurement) %>%
   rename(PM25_0073F = sample_measurement) %>%
@@ -362,194 +362,224 @@ summary(df_combined)
 library(ggplot2)
 
 # Plot for Site 0034
+model_0034 <- lm(PM25_0034H ~ PM25_0034F, data = df_combined)
+summary_0034 <- summary(model_0034)
+r_squared_0034 <- round(summary_0034$r.squared, 4)
+intercept_0034 <- round(coef(model_0034)[1], 4)
+slope_0034 <- round(coef(model_0034)[2], 4)
+label_0034 <- paste0("y = ", slope_0034, "x + ", intercept_0034, "\nR² = ", r_squared_0034)
+
+x_pos <- quantile(df_combined$PM25_0034F, 0.05, na.rm = TRUE)  # 5th percentile for x
+y_pos <- quantile(df_combined$PM25_0034H, 0.95, na.rm = TRUE)  # 95th percentile for y
+
 ggplot(df_combined, aes(x = PM25_0034F, y = PM25_0034H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0034: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos, y = y_pos, label = label_0034, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0034: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
 
 # Plot for Site 0038
+model_0038 <- lm(PM25_0038H ~ PM25_0038F, data = df_combined)
+summary_0038 <- summary(model_0038)
+r_squared_0038 <- round(summary_0038$r.squared, 4)
+intercept_0038 <- round(coef(model_0038)[1], 4)
+slope_0038 <- round(coef(model_0038)[2], 4)
+label_0038 <- paste0("y = ", slope_0038, "x + ", intercept_0038, "\nR² = ", r_squared_0038)
+
+x_pos <- quantile(df_combined$PM25_0038F, 0.05, na.rm = TRUE)
+y_pos <- quantile(df_combined$PM25_0038H, 0.95, na.rm = TRUE)
+
 ggplot(df_combined, aes(x = PM25_0038F, y = PM25_0038H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0038: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos, y = y_pos, label = label_0038, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0038: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
 
 # Plot for Site 0045
+model_0045 <- lm(PM25_0045H ~ PM25_0045F, data = df_combined)
+summary_0045 <- summary(model_0045)
+r_squared_0045 <- round(summary_0045$r.squared, 4)
+intercept_0045 <- round(coef(model_0045)[1], 4)
+slope_0045 <- round(coef(model_0045)[2], 4)
+label_0045 <- paste0("y = ", slope_0045, "x + ", intercept_0045, "\nR² = ", r_squared_0045)
+
+x_pos_0045 <- quantile(df_combined$PM25_0045F, 0.05, na.rm = TRUE)
+y_pos_0045 <- quantile(df_combined$PM25_0045H, 0.95, na.rm = TRUE)
+
 ggplot(df_combined, aes(x = PM25_0045F, y = PM25_0045H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0045: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0045, y = y_pos_0045, label = label_0045, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0045: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
 
 # Plot for Site 0060
+model_0060 <- lm(PM25_0060H ~ PM25_0060F, data = df_combined)
+summary_0060 <- summary(model_0060)
+r_squared_0060 <- round(summary_0060$r.squared, 4)
+intercept_0060 <- round(coef(model_0060)[1], 4)
+slope_0060 <- round(coef(model_0060)[2], 4)
+label_0060 <- paste0("y = ", slope_0060, "x + ", intercept_0060, "\nR² = ", r_squared_0060)
+
+x_pos_0060 <- quantile(df_combined$PM25_0060F, 0.05, na.rm = TRUE)
+y_pos_0060 <- quantile(df_combined$PM25_0060H, 0.95, na.rm = TRUE)
+
 ggplot(df_combined, aes(x = PM25_0060F, y = PM25_0060H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0060: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0060, y = y_pos_0060, label = label_0060, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0060: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
 
 # Plot for Site 0065
+model_0065 <- lm(PM25_0065H ~ PM25_0065F, data = df_combined)
+summary_0065 <- summary(model_0065)
+r_squared_0065 <- round(summary_0065$r.squared, 4)
+intercept_0065 <- round(coef(model_0065)[1], 4)
+slope_0065 <- round(coef(model_0065)[2], 4)
+label_0065 <- paste0("y = ", slope_0065, "x + ", intercept_0065, "\nR² = ", r_squared_0065)
+
+x_pos_0065 <- quantile(df_combined$PM25_0065F, 0.05, na.rm = TRUE)
+y_pos_0065 <- quantile(df_combined$PM25_0065H, 0.95, na.rm = TRUE)
+
 ggplot(df_combined, aes(x = PM25_0065F, y = PM25_0065H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0065: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0065, y = y_pos_0065, label = label_0065, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0065: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
 
 # Plot for Site 0073
+model_0073 <- lm(PM25_0073H ~ PM25_0073F, data = df_combined)
+summary_0073 <- summary(model_0073)
+r_squared_0073 <- round(summary_0073$r.squared, 4)
+intercept_0073 <- round(coef(model_0073)[1], 4)
+slope_0073 <- round(coef(model_0073)[2], 4)
+label_0073 <- paste0("y = ", slope_0073, "x + ", intercept_0073, "\nR² = ", r_squared_0073)
+
+x_pos_0073 <- quantile(df_combined$PM25_0073F, 0.05, na.rm = TRUE)
+y_pos_0073 <- quantile(df_combined$PM25_0073H, 0.95, na.rm = TRUE)
+
 ggplot(df_combined, aes(x = PM25_0073F, y = PM25_0073H)) +
   geom_point(color = "steelblue", size = 2) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(
-    title = "Site 0073: Filter vs. Hourly Average PM2.5",
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0073, y = y_pos_0073, label = label_0073, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0073: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+```
+```{r}
+summary_df <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Slope = c(slope_0034, slope_0038, slope_0045, slope_0060, slope_0065, slope_0073),
+  Intercept = c(intercept_0034, intercept_0038, intercept_0045, intercept_0060, intercept_0065, intercept_0073),
+  R2 = c(r_squared_0034, r_squared_0038, r_squared_0045, r_squared_0060, r_squared_0065, r_squared_0073)
+)
+summary_df
 ```
 
-```{r}
+# 6x6 MATRIX PLOT OF FILTER DATA COMPARISONS.
+```{r epa-6x6-filter-grid, fig.width=22, fig.height=22, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(gridExtra)
 
-# Calculate R² for Site 0034
-r_squared_0034 <- summary(lm(PM25_0034H ~ PM25_0034F, data = df_combined))$r.squared
+# List of site numbers and their corresponding dataframes
+site_dfs <- list(
+  "0034" = df_0034,
+  "0038" = df_0038,
+  "0045" = df_0045,
+  "0060" = df_0060,
+  "0065" = df_0065,
+  "0073" = df_0073
+)
 
-ggplot(df_combined, aes(x = PM25_0034F, y = PM25_0034H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0034: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0034, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0034F, df_combined$PM25_0034H, na.rm = TRUE))) +
-  theme_minimal()
+# Create a combined daily average dataframe
+epa_24hr_clean <- bind_rows(
+  lapply(names(site_dfs), function(site) {
+    df <- site_dfs[[site]]
+    df %>%
+      filter(sample_duration == "24 HOUR") %>%
+      group_by(date_local) %>%
+      summarise(pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop") %>%
+      mutate(site_number = site, date = as.Date(date_local)) %>%
+      select(date, site_number, pm25)
+  })
+)
 
-# Calculate R² for Site 0038
-r_squared_0038 <- summary(lm(PM25_0038H ~ PM25_0038F, data = df_combined))$r.squared
+# Prepare and reshape the data into wide format
+epa_wide <- epa_24hr_clean %>%
+  select(date, site_number, pm25) %>%
+  mutate(site_number = as.character(site_number)) %>%
+  pivot_wider(names_from = site_number, values_from = pm25, values_fn = mean) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
 
-ggplot(df_combined, aes(x = PM25_0038F, y = PM25_0038H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0038: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0038, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0038F, df_combined$PM25_0038H, na.rm = TRUE))) +
-  theme_minimal()
+# Set up plotting variables
+site_names <- sort(setdiff(names(epa_wide), "date"))
+n_sites <- length(site_names)
+axis_min <- 0
+axis_max <- 28
 
-# Calculate R² for Site 0045
-r_squared_0045 <- summary(lm(PM25_0045H ~ PM25_0045F, data = df_combined))$r.squared
+# Create matrix of plots
+plot_matrix <- vector("list", n_sites * n_sites)
 
-ggplot(df_combined, aes(x = PM25_0045F, y = PM25_0045H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0045: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0045, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0045F, df_combined$PM25_0045H, na.rm = TRUE))) +
-  theme_minimal()
+for (i in seq_len(n_sites)) {
+  for (j in seq_len(n_sites)) {
+    x_site <- site_names[j]
+    y_site <- site_names[i]
+    index <- (i - 1) * n_sites + j
 
-# Calculate R² for Site 0060
-r_squared_0060 <- summary(lm(PM25_0060H ~ PM25_0060F, data = df_combined))$r.squared
+    df_pair <- epa_wide %>%
+      select(x = all_of(x_site), y = all_of(y_site)) %>%
+      filter(!is.na(x) & !is.na(y))
 
-ggplot(df_combined, aes(x = PM25_0060F, y = PM25_0060H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0060: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0060, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0060F, df_combined$PM25_0060H, na.rm = TRUE))) +
-  theme_minimal()
+    if (nrow(df_pair) > 2) {
+      model <- lm(y ~ x, data = df_pair)
+      r2 <- summary(model)$r.squared
+      coef_vals <- coef(model)
+      eq_label <- paste0("y = ", round(coef_vals[2], 2), "x + ", round(coef_vals[1], 2), 
+                         "\nR² = ", round(r2, 2))
+    } else {
+      eq_label <- "Not enough data"
+    }
 
-# Calculate R² for Site 0065
-r_squared_0065 <- summary(lm(PM25_0065H ~ PM25_0065F, data = df_combined))$r.squared
+    p <- ggplot(df_pair, aes(x = x, y = y)) +
+      geom_point(color = "steelblue", alpha = 0.7, size = 1.8) +
+      geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 1) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+      coord_fixed(xlim = c(axis_min, axis_max), ylim = c(axis_min, axis_max)) +
+      labs(
+        x = paste("Site", x_site),
+        y = paste("Site", y_site)
+      ) +
+      annotate("text", x = axis_min + 1.5, y = axis_max - 1.5, label = eq_label,
+               hjust = 0, vjust = 1, size = 3.2) +
+      theme_minimal(base_size = 12) +
+      theme(
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 9),
+        plot.margin = margin(5, 5, 5, 5)
+      )
 
-ggplot(df_combined, aes(x = PM25_0065F, y = PM25_0065H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0065: Filter vs. Hourly Avg PM2.5 (R² = ", round(r_squared_0065, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0065F, df_combined$PM25_0065H, na.rm = TRUE))) +
-  theme_minimal()
+    plot_matrix[[index]] <- p
+  }
+}
 
-# Calculate R² for Site 0073
-r_squared_0073 <- summary(lm(PM25_0073H ~ PM25_0073F, data = df_combined))$r.squared
-
-ggplot(df_combined, aes(x = PM25_0073F, y = PM25_0073H)) +
-  geom_point(color = "steelblue", size = 2) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  labs(
-    title = paste0("Site 0073: Hourly Avg PM2.5  vs. Filter (R² = ", round(r_squared_0073, 2), ")"),
-    x = "24-Hour Filter PM2.5 (µg/m³)",
-    y = "Daily Avg of Hourly PM2.5 (µg/m³)"
-  ) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
-  scale_y_continuous(limits = c(0, max(df_combined$PM25_0073F, df_combined$PM25_0073H, na.rm = TRUE))) +
-  theme_minimal()
+# Display the full 6x6 grid of comparisons
+grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
+print(grid_plot)
 
 ```
 
@@ -563,48 +593,6 @@ df_combined_24hr <- all_dates %>%
   left_join(df_0065_24hr, by = "date_local") %>%
   left_join(df_0073_24hr, by = "date_local")
 ```
-
-
-```{r}
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(purrr)
-
-# Step 1: Get only filter PM columns
-filter_columns <- names(df_combined_24hr)[str_detect(names(df_combined_24hr), "_F")]
-
-# Step 2: All unique site pairs (including self-pairs)
-site_pairs <- expand.grid(Site1 = filter_columns, Site2 = filter_columns, stringsAsFactors = FALSE) %>%
-  filter(Site1 <= Site2)
-
-# Step 3: R2 calculation function
-get_r2 <- function(col1, col2, data) {
-  df_pair <- data %>%
-    select(all_of(c(col1, col2))) %>%
-    drop_na()
-  if (nrow(df_pair) < 2) return(NA)
-  summary(lm(df_pair[[col2]] ~ df_pair[[col1]]))$r.squared
-}
-
-# Step 4: Compute R2 values for all pairs
-r2_table <- map2_dfr(site_pairs$Site1, site_pairs$Site2, function(c1, c2) {
-  tibble(
-    Site1 = str_remove(c1, "PM25_") %>% str_remove("F"),
-    Site2 = str_remove(c2, "PM25_") %>% str_remove("F"),
-    R2 = get_r2(c1, c2, df_combined_24hr)
-  )
-})
-
-# Step 5: Merge with distance data
-r2_with_distance <- left_join(r2_table, site_distances, by = c("Site1", "Site2"))
-
-# View final merged table
-print(r2_with_distance)
-
-```
-
-
 
 
 
@@ -659,34 +647,7 @@ print(site_distances)
 
 
 ```{r}
-library(ggplot2)
-library(dplyr)
 
-# Loop over each site and create a separate plot
-unique_sites <- unique(c(r2_vs_distance$Site1, r2_vs_distance$Site2))
-
-for (this_site in unique_sites) {
-  # Filter R² values where the site is involved
-  plot_data <- r2_vs_distance %>%
-    filter(Site1 == this_site | Site2 == this_site) %>%
-    mutate(
-      OtherSite = ifelse(Site1 == this_site, Site2, Site1)
-    )
-
-  # Plot
-  p <- ggplot(plot_data, aes(x = Distance_km, y = R2, label = OtherSite)) +
-    geom_point(color = "steelblue", size = 3) +
-    geom_text(vjust = -0.8, size = 3) +
-    geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "red") +
-    labs(
-      title = paste("R² vs. Distance: Site", this_site),
-      x = "Distance to Other Site (km)",
-      y = paste("R² with Site", this_site)
-    ) +
-    theme_minimal()
-
-  print(p)  # show the plot
-}
 
 ```
 
@@ -694,17 +655,6 @@ for (this_site in unique_sites) {
 ```{r}
 
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 
 

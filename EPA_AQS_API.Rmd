@@ -43,6 +43,13 @@ head(epa_site_data)
 
 
 ```{r}
+
+library(writexl)
+
+write_xlsx(cinc_locations, "cinc_locations.xlsx")
+```
+
+```{r}
 library(dplyr)
 library(readr)
 

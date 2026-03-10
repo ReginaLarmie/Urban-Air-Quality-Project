@@ -1,0 +1,4 @@
+"1","TableGrob (5 x 5) ""arrange"": 25 grobs
+"
+"0","# STEP 5: Save to high-resolution PDF"
+"0","ggsave(""EPA_PM25_5x5_FullMatrix.pdf"", plot = grid_plot, width = 22, height = 22)"

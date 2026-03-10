@@ -1,0 +1,13 @@
+"0",""
+"0","filter(Date >= as.Date(""2024-01-01""),"
+"0","       Date <= as.Date(""2024-01-14""))"
+"2","G1;H1;Errorh in `>=.default`(Date, as.Date(""2024-01-01"")) : 
+  comparison (>=) is possible only for atomic and list types
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","# Lowest value (overall, Jan 1–14)"
+"0","lowest_pm25 <- cinc_jan1_14 %>%"
+"0","  slice_min(value, n = 1, with_ties = FALSE)"
+"0",""
+"0","lowest_pm25"

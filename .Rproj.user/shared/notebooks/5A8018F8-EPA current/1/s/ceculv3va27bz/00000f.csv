@@ -1,0 +1,7 @@
+"0","df_hourly_all <- reduce("
+"0","  list(df_0034_1hr_avg, df_0038_1hr_avg, df_0045_1hr_avg, df_0060_1hr_avg, df_0065_1hr_avg, df_0073_1hr_avg),"
+"0","  full_join,"
+"0","  by = ""date_local"""
+"0",")"
+"0",""
+"0","head(df_hourly_all)"

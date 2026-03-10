@@ -1,0 +1,5 @@
+"0","# Daily average PM2.5 values from CLEANinCLE"
+"0","cleanincle_daily_avg <- cleanincle_data %>%"
+"0","  group_by(date) %>%"
+"0","  summarise(pm25_avg = mean(value, na.rm = TRUE)) %>%"
+"0","  ungroup()"

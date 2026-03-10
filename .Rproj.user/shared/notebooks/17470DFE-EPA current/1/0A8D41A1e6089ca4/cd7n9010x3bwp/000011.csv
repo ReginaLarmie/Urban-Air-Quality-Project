@@ -1,0 +1,22 @@
+"0"," # Load necessary libraries"
+"0","library(readr)"
+"0","library(dplyr)"
+"0",""
+"0","# Step 1a: Load CinC dataset"
+"0","cleanincle_data <- read_csv(""~/Documents/R_Projects/Air_pollution_Projects/CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv"")"
+"2","[1mRows: [22m[34m699103[39m [1mColumns: [22m[34m8[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (3): location_name, device_eui, measure_name
+[32mdbl[39m  (4): latitude, longitude, device_number, value
+[34mdttm[39m (1): time
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","# Step 1b: Filter only PM2.5 observations"
+"0","CinC_pm2.5 <- cleanincle_data %>%"
+"0","  filter(measure_name == ""mc_pm2_5"")"
+"0",""

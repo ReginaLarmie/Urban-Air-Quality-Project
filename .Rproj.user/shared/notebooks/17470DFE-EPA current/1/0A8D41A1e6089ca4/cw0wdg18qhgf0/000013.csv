@@ -1,0 +1,7 @@
+"0","# Create daily average PM2.5 per device"
+"0","CinC_daily_avg <- CinC_clean %>%"
+"0","  group_by(Date, device_number) %>%"
+"0","  summarise(pm2.5_CinC = mean(PM2.5, na.rm = TRUE), .groups = ""drop"")"
+"0",""
+"0","# Preview the result"
+"0","head(CinC_daily_avg)"

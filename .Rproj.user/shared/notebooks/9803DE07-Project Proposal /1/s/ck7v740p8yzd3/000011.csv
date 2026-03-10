@@ -1,0 +1,30 @@
+"0","library(dplyr)"
+"0","library(purrr)"
+"0","library(readr)"
+"0",""
+"0","# Step 1: Define sites and file paths"
+"0","site_files <- c(""0034"", ""0038"", ""0045"", ""0060"", ""0065"", ""0073"")"
+"0","file_paths <- paste0(""epa_pm25_site_"", site_files, "".csv"")"
+"0",""
+"0","# Step 2: Read CSVs into a named list"
+"0","epa_site_data <- map(file_paths, ~ read_csv(.x, show_col_types = FALSE))"
+"0","names(epa_site_data) <- site_files"
+"0",""
+"0","# Step 3: Filter for 24 HOUR duration and prepare each site’s data"
+"0","epa_filtered <- map2(epa_site_data, site_files, function(df, site) {"
+"0","  df %>%"
+"0","    filter(sample_duration == ""24 HOUR"") %>%"
+"0","    select(date_local, sample_measurement) %>%"
+"0","    rename("
+"0","      Date = date_local,"
+"0","      !!paste0(""PM2.5_"", site, ""F"") := sample_measurement"
+"0","    ) %>%"
+"0","    mutate(!!paste0(""Site_"", site) := site)"
+"0","})"
+"2","G1;[1m[33mError[39m in `map2()`:[22m
+[38;5;232m[36mℹ[38;5;232m In index: 1.
+[36mℹ[38;5;232m With name: 0034.[39m
+[1mCaused by error:[22m
+[33m![39m object 'sample_duration' not found
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+g"

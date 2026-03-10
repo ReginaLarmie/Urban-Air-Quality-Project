@@ -1,0 +1,10 @@
+"0",""
+"0","# Save large canvas so labels remain readable"
+"0","dir.create(""figs"", showWarnings = FALSE)"
+"0","w <- max(20, n_dev * 2.2)   # width in inches"
+"0","h <- max(22, n_dev * 2.5)   # height in inches"
+"0","ggsave(""figs/fig_cinc_pairwise_device_full_labels.png"", matrix_plot, width = w, height = h, dpi = 300)"
+"0",""
+"0","matrix_plot"
+"1","TableGrob (16 x 16) ""arrange"": 256 grobs
+"

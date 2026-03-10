@@ -1,0 +1,32 @@
+"0",""
+"0","# Count number of NA values in each column"
+"0",""
+"0","na_counts_24hr <- sapply(epa_24hr_clean, function(col) sum(is.na(col)))"
+"0","na_counts_24hr <- sort(na_counts_24hr, decreasing = TRUE)"
+"0",""
+"0","# View NA count result"
+"0","na_counts_24hr"
+"1","       pm25 site_number        date 
+         16           0           0 
+"
+"0","# Step 6: Identify mostly NA columns"
+"0",""
+"0","n_rows_24hr <- nrow(epa_24hr_clean)"
+"0",""
+"0","# Threshold: Keep columns where fewer than 5% of values are not NA"
+"0","mostly_na_cols_24hr <- names(na_counts_24hr[na_counts_24hr > 0 & na_counts_24hr < 0.05 * n_rows_24hr])"
+"0",""
+"0","# View summary of those mostly NA columns"
+"0",""
+"0","epa_24hr_clean %>%"
+"0","  select(all_of(mostly_na_cols_24hr)) %>%"
+"0","  summary()"
+"1","      pm25       
+ Min.   : 1.200  
+ 1st Qu.: 4.400  
+ Median : 6.700  
+ Mean   : 7.656  
+ 3rd Qu.: 9.700  
+ Max.   :26.100  
+ NA's   :16      
+"

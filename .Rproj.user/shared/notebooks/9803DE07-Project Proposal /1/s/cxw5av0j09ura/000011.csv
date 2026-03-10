@@ -1,0 +1,7 @@
+"0",""
+"0","cleanincle_coords <- cleanincle_data %>%"
+"0","  select(device_eui, latitude, longitude) %>%"
+"0","  distinct()"
+"0",""
+"0","# Preview"
+"0","head(cleanincle_coords)"

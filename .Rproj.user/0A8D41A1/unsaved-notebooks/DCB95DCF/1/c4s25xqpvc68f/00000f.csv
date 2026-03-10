@@ -1,0 +1,27 @@
+"0","# 6. Map each CinC device to nearest EPA site (for fair pairing)"
+"0",""
+"0","```r"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","```{r cinc-map-to-epa}"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","device_to_epa <- cinc_locations %>%"
+"0","  rowwise() %>%"
+"0","  mutate("
+"0","    epa_site = epa_coords$Site[ which.min("
+"0","      distHaversine("
+"0","        c(longitude, latitude),"
+"0","        cbind(epa_coords$Longitude, epa_coords$Latitude)"
+"0","      )"
+"0","    )]"
+"0","  ) %>%"
+"0","  ungroup() %>%"
+"0","  select(device_number, epa_site)"
+"0",""
+"0","write_csv(device_to_epa, ""tables/cinc_to_epa_nearest.csv"")"
+"0","device_to_epa"

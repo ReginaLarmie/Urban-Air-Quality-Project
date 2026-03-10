@@ -1,0 +1,8 @@
+"0","library(dplyr)"
+"0",""
+"0","merged_data <- left_join(cle_weather_clean, cinc_daily, by = ""DATE"")"
+"2","G1;[1m[33mError[39m in `left_join()`:[22m
+[38;5;232m[33m![38;5;232m Join columns in `y` must be present in the data.
+[31m✖[38;5;232m Problem with `DATE`.[39m
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+g"

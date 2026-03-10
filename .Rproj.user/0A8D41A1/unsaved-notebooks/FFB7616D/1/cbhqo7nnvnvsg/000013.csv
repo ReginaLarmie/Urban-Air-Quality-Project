@@ -1,0 +1,22 @@
+"0","# 6) Save a high‑res image for the report (adjust size as needed)"
+"0","#    Width/height scale roughly with number of devices so labels stay readable."
+"0","out_w <- max(12, n_dev * 1.4)"
+"2","G1;H1;Errorh: object 'n_dev' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","out_h <- max(12, n_dev * 1.4)"
+"2","G1;H1;Errorh: object 'n_dev' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","ggsave(""figs/fig_cinc_16x16_pairwise.png"", grid_plot, width = out_w, height = out_h, dpi = 300)"
+"2","G1;H1;Errorh: object 'out_w' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","grid_plot"
+"2","G1;H1;Errorh: object 'grid_plot' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"

@@ -1,0 +1,24 @@
+"0","library(dplyr)"
+"0","library(readr)"
+"0",""
+"0","# Load the data (if not already loaded)"
+"0","cleanincle_data <- read_csv(""CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv"")"
+"2","[1mRows: [22m[34m699103[39m [1mColumns: [22m[34m8[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (3): location_name, device_eui, measure_name
+[32mdbl[39m  (4): latitude, longitude, device_number, value
+[34mdttm[39m (1): time
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","# Create a site info table"
+"0","cleanincle_sites <- cleanincle_data %>%"
+"0","  select(location_name, device_number, device_eui, longitude, latitude) %>%"
+"0","  distinct()"
+"0",""
+"0","# View the table"
+"0","print(cleanincle_sites)"

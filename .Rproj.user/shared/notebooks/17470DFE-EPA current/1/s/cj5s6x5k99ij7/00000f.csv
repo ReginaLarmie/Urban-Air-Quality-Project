@@ -1,0 +1,25 @@
+"0","# Load required library"
+"0","library(readr)"
+"0",""
+"0","# Step 1: Read in Site 0034 "
+"0","df_0034 <- read_csv(""epa_pm25_site_0034.csv"")"
+"2","[1mRows: [22m[34m4429[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qualifier, method...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, sample_duration_c...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","# Preview structure"
+"0","glimpse(df_0034)"
+"2","G1;H1;Errorh in glimpse(df_0034) : could not find function ""glimpse""
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"

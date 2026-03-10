@@ -1,0 +1,7 @@
+"0",""
+"0","# Vector of site numbers"
+"0","site_numbers <- c(""0034"", ""0038"", ""0045"", ""0060"", ""0065"", ""0073"")"
+"0",""
+"0","# Define date range"
+"0","start_date <- as.Date(""2024-11-01"")"
+"0","end_date   <- as.Date(""2025-05-01"")"

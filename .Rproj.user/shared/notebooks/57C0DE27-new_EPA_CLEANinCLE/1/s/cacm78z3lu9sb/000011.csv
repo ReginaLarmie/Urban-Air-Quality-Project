@@ -1,0 +1,88 @@
+"0","# Load required libraries"
+"0","library(dplyr)"
+"0","library(ggplot2)"
+"0","library(readr)"
+"0","library(gridExtra)"
+"0",""
+"0","# Load data"
+"0","epa_data <- read_csv(""epa_pm25_site_combined.csv"")"
+"2","[1mRows: [22m[34m22217[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qual...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, samp...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","cleanincle_data <- read_csv(""CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv"")"
+"2","[1mRows: [22m[34m699103[39m [1mColumns: [22m[34m8[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (3): location_name, device_eui, measure_name
+[32mdbl[39m  (4): latitude, longitude, device_number, value
+[34mdttm[39m (1): time
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","# Prepare daily averages"
+"0","epa_daily <- epa_data %>%"
+"0","  select(site_number, date_local, sample_measurement) %>%"
+"0","  mutate(date = as.Date(date_local)) %>%"
+"0","  group_by(site_number, date) %>%"
+"0","  summarise(epa_pm25 = mean(sample_measurement, na.rm = TRUE), .groups = ""drop"")"
+"0",""
+"0","cleanincle_daily <- cleanincle_data %>%"
+"0","  mutate(date = as.Date(time)) %>%"
+"0","  group_by(device_number, date) %>%"
+"0","  summarise(clean_pm25 = mean(value, na.rm = TRUE), .groups = ""drop"")"
+"0",""
+"0","# Define EPA–CLEANinCLE pairs"
+"0","pairs <- data.frame("
+"0","  epa_site = c(""0034"", ""0038"", ""0045"", ""0060"", ""0060"", ""0065""),"
+"0","  clean_device = c(24, 7, 5, 17, 177, 8)"
+"0",")"
+"0",""
+"0","# Generate list of plots"
+"0","plot_list <- lapply(1:nrow(pairs), function(i) {"
+"0","  epa_id <- pairs$epa_site[i]"
+"0","  cin_id <- pairs$clean_device[i]"
+"0",""
+"0","  epa_subset <- epa_daily %>% filter(site_number == epa_id)"
+"0","  cin_subset <- cleanincle_daily %>% filter(device_number == cin_id)"
+"0",""
+"0","  merged <- inner_join(epa_subset, cin_subset, by = ""date"")"
+"0",""
+"0","  if (nrow(merged) >= 2) {"
+"0","    r2 <- summary(lm(clean_pm25 ~ epa_pm25, data = merged))$r.squared"
+"0","    r2_label <- paste0(""R² = "", round(r2, 3))"
+"0",""
+"0","    ggplot(merged, aes(x = epa_pm25, y = clean_pm25)) +"
+"0","      geom_point(color = ""steelblue"", alpha = 0.7) +"
+"0","      geom_smooth(method = ""lm"", se = FALSE, color = ""darkred"") +"
+"0","      labs("
+"0","        title = paste0(""EPA "", epa_id, "" vs. CinC "", cin_id),"
+"0","        x = ""EPA 24-hr PM2.5 (µg/m³)"","
+"0","        y = ""CLEANinCLE 24-hr PM2.5 (µg/m³)"","
+"0","        caption = r2_label"
+"0","      ) +"
+"0","      theme_minimal(base_size = 12)"
+"0","  } else {"
+"0","    NULL"
+"0","  }"
+"0","})"
+"0",""
+"0","# Remove any NULL plots (in case of missing data)"
+"0","plot_list <- Filter(Negate(is.null), plot_list)"
+"0",""
+"0","# Save to one high-resolution PDF"
+"0","pdf(""epa_cleanincle_comparison_plots.pdf"", width = 14, height = 10)  # 2 columns layout"
+"0","grid.arrange(grobs = plot_list, ncol = 2)"

@@ -1,0 +1,29 @@
+"0","# 9. Build “wide” tables (for matrix plots later)"
+"0",""
+"0","These are just **data tables with concentrations**—we’re not plotting yet."
+"2","G1;H1;Errorh: unexpected symbol in ""These are""
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","```r"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","```{r epa-wide-tables}"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","# EPA FRM wide (columns are sites)"
+"0","epa_frm_wide <- epa_24hr_daily %>%"
+"0","  pivot_wider(names_from = Site, values_from = PM25_FRM)"
+"0",""
+"0","# EPA FEM wide (columns are sites)"
+"0","epa_fem_wide <- epa_fem_daily %>%"
+"0","  pivot_wider(names_from = Site, values_from = PM25_FEM)"
+"0",""
+"0","write_csv(epa_frm_wide, ""tables/epa_frm_wide.csv"")"
+"0","write_csv(epa_fem_wide, ""tables/epa_fem_wide.csv"")"
+"0",""
+"0","head(epa_frm_wide); head(epa_fem_wide)"

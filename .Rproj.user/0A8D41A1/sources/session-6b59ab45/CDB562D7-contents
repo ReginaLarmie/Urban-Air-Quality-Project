@@ -1,0 +1,2569 @@
+---
+title: "EPA progress"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Objectives
+	•	Prepare and reshape the EPA dataset into a clean, wide format
+	•	Generate site-by-site PM2.5 comparison plots with regression lines and R² values
+	•	Build a matrix plot of all pairwise site comparisons
+	•	Analyze relationships between R² and geographic distance between sites
+
+
+## Packages and Data Loading
+```{r}
+# Load libraries
+library(tidyverse)
+library(lubridate)
+library(geosphere)
+library(gridExtra)
+library(patchwork)
+library(readr)
+library(dplyr)
+
+```
+
+
+
+##  Site 0034
+```{r}
+
+# Read in Site 0034 
+df_0034 <- read_csv("epa_pm25_site_0034.csv")
+
+# Preview structure
+glimpse(df_0034)
+
+# Select only 24-hour data
+df_0034_24hr <- df_0034 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0034F = sample_measurement)
+
+# Preview
+head(df_0034_24hr)
+
+# Average duplicate entries by date
+df_0034_24hr_avg <- df_0034_24hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0034F = mean(PM25_0034F, na.rm = TRUE), .groups = "drop")
+
+# Select only 1-hour data
+df_0034_1hr <- df_0034 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0034H = sample_measurement)
+
+head(df_0034_1hr)
+
+# Daily averages from the 1-hour data
+df_0034_1hr_avg <- df_0034_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0034H = mean(PM25_0034H, na.rm = TRUE), .groups = "drop")
+
+```
+
+## Site 0038
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0038
+df_0038 <- read_csv("epa_pm25_site_0038.csv")
+
+# Preview structure
+glimpse(df_0038)
+
+# Filter only 24-hour data
+df_0038_24hr <- df_0038 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0038F = sample_measurement)
+
+# Preview
+head(df_0038_24hr)
+
+# Average duplicate entries by date
+df_0038_24hr_avg <- df_0038 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0038F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0038F = mean(PM25_0038F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0038_1hr <- df_0038 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0038H = sample_measurement)
+
+head(df_0038_1hr)
+
+# Daily averages from the 1-hour data
+df_0038_1hr_avg <- df_0038_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0038H = mean(PM25_0038H, na.rm = TRUE), .groups = "drop")
+```
+
+
+## Site 0045
+```{r}
+
+# Load required library
+library(readr)
+library(dplyr)
+
+# Read in Site 0045
+df_0045 <- read_csv("epa_pm25_site_0045.csv")
+
+# Preview structure
+glimpse(df_0045)
+
+# Filter only 24-hour data
+df_0045_24hr <- df_0045 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0045F = sample_measurement)
+
+head(df_0045_24hr)
+
+# Average duplicate entries by date
+df_0045_24hr_avg <- df_0045 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0045F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0045F = mean(PM25_0045F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0045_1hr <- df_0045 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0045H = sample_measurement)
+
+head(df_0045_1hr)
+
+# Daily averages from the 1-hour data
+df_0045_1hr_avg <- df_0045_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0045H = mean(PM25_0045H, na.rm = TRUE), .groups = "drop")
+```
+
+
+## Site 0060
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0060 separately
+df_0060 <- read_csv("epa_pm25_site_0060.csv")
+
+# Preview structure
+glimpse(df_0060)
+
+# Filter only 24-hour data
+df_0060_24hr <- df_0060 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0060F = sample_measurement)
+
+head(df_0060_24hr)
+
+# Average duplicate entries by date
+df_0060_24hr_avg <- df_0060 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0060F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0060F = mean(PM25_0060F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0060_1hr <- df_0060 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0060H = sample_measurement)
+
+head(df_0060_1hr)
+
+# Daily averages from the 1-hour data
+df_0060_1hr_avg <- df_0060_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0060H = mean(PM25_0060H, na.rm = TRUE), .groups = "drop")
+```
+
+## Site 0065
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Step 1: Read in Site 0065 separately
+df_0065 <- read_csv("epa_pm25_site_0065.csv")
+
+# Preview structure
+glimpse(df_0065)
+
+# Filter only 24-hour data
+df_0065_24hr <- df_0065 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0065F = sample_measurement)
+
+head(df_0065_24hr)
+
+# Average duplicate entries by date
+
+df_0065_24hr_avg <- df_0065 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0065F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0065F = mean(PM25_0065F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0065_1hr <- df_0065 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0065H = sample_measurement)
+
+head(df_0065_1hr)
+
+# Daily averages from the 1-hour data
+df_0065_1hr_avg <- df_0065_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0065H = mean(PM25_0065H, na.rm = TRUE), .groups = "drop")
+```
+
+## Site 0073
+```{r}
+# Load required library
+library(readr)
+library(dplyr)
+
+# Read in Site 0073
+df_0073 <- read_csv("epa_pm25_site_0073.csv")
+
+# Preview structure
+glimpse(df_0073)
+
+# Filter only 24-hour data
+df_0073_24hr <- df_0073 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0073F = sample_measurement)
+
+head(df_0073_24hr)
+
+# Average duplicate entries by date
+
+df_0073_24hr_avg <- df_0073 %>%
+  filter(sample_duration == "24 HOUR") %>%
+  select(date_local, sample_measurement) %>%
+  rename(PM25_0073F = sample_measurement) %>%
+  group_by(date_local) %>%
+  summarise(PM25_0073F = mean(PM25_0073F, na.rm = TRUE), .groups = "drop")
+
+# Filter only 1-hour data
+df_0073_1hr <- df_0073 %>%
+  filter(sample_duration == "1 HOUR") %>%
+  select(date_local, time_local, sample_measurement) %>%
+  rename(PM25_0073H = sample_measurement)
+
+head(df_0073_1hr)
+
+# Daily averages from the 1-hour data
+df_0073_1hr_avg <- df_0073_1hr %>%
+  group_by(date_local) %>%
+  summarise(PM25_0073H = mean(PM25_0073H, na.rm = TRUE), .groups = "drop")
+
+
+```
+
+## Combine all 24-hour dataframes into one master dataframe by date
+```{r}
+library(purrr)
+library(purrr)  # <-- add this if not already loaded
+
+df_filter_all <- reduce(
+  list(df_0034_24hr, df_0038_24hr, df_0045_24hr, df_0060_24hr, df_0065_24hr, df_0073_24hr),
+  full_join,
+  by = "date_local"
+)
+
+head(df_filter_all)
+```
+
+## Combine all 1-hour dataframes into one dataframe by date
+```{r}
+df_hourly_all <- reduce(
+  list(df_0034_1hr_avg, df_0038_1hr_avg, df_0045_1hr_avg, df_0060_1hr_avg, df_0065_1hr_avg, df_0073_1hr_avg),
+  full_join,
+  by = "date_local"
+)
+
+head(df_hourly_all)
+```
+
+# list of all dates
+```{r}
+library(dplyr)
+library(tibble)
+library(purrr)
+
+# Replace with the actual full date range in your data
+all_dates <- tibble(date_local = seq.Date(
+  from = as.Date("2024-11-01"),
+  to = as.Date("2025-05-31"),
+  by = "day"
+))
+
+# Site 0034
+df_0034_24hr_full <- left_join(all_dates, df_0034_24hr, by = "date_local")
+df_0034_1hr_full  <- left_join(all_dates, df_0034_1hr,  by = "date_local")
+
+# Site 0038
+df_0038_24hr_full <- left_join(all_dates, df_0038_24hr, by = "date_local")
+df_0038_1hr_full  <- left_join(all_dates, df_0038_1hr,  by = "date_local")
+
+# Site 0045
+df_0045_24hr_full <- left_join(all_dates, df_0045_24hr, by = "date_local")
+df_0045_1hr_full  <- left_join(all_dates, df_0045_1hr,  by = "date_local")
+
+# Site 0060
+df_0060_24hr_full <- left_join(all_dates, df_0060_24hr, by = "date_local")
+df_0060_1hr_full  <- left_join(all_dates, df_0060_1hr,  by = "date_local")
+
+# Site 0065
+df_0065_24hr_full <- left_join(all_dates, df_0065_24hr, by = "date_local")
+df_0065_1hr_full  <- left_join(all_dates, df_0065_1hr,  by = "date_local")
+
+# Site 0073
+df_0073_24hr_full <- left_join(all_dates, df_0073_24hr, by = "date_local")
+df_0073_1hr_full  <- left_join(all_dates, df_0073_1hr,  by = "date_local")
+
+
+```
+
+#
+
+```{r}
+
+library(dplyr)
+
+df_combined <- all_dates %>%
+  left_join(df_0034_24hr,    by = "date_local") %>%
+  left_join(df_0034_1hr_avg, by = "date_local") %>%
+  left_join(df_0038_24hr,    by = "date_local") %>%
+  left_join(df_0038_1hr_avg, by = "date_local") %>%
+  left_join(df_0045_24hr,    by = "date_local") %>%
+  left_join(df_0045_1hr_avg, by = "date_local") %>%
+  left_join(df_0060_24hr,    by = "date_local") %>%
+  left_join(df_0060_1hr_avg, by = "date_local") %>%
+  left_join(df_0065_24hr,    by = "date_local") %>%
+  left_join(df_0065_1hr_avg, by = "date_local") %>%
+  left_join(df_0073_24hr,    by = "date_local") %>%
+  left_join(df_0073_1hr_avg, by = "date_local")
+
+# result
+glimpse(df_combined)
+summary(df_combined)
+  
+```
+
+```{r}
+library(ggplot2)
+
+# Plot for Site 0034
+model_0034 <- lm(PM25_0034H ~ PM25_0034F, data = df_combined)
+summary_0034 <- summary(model_0034)
+r_squared_0034 <- round(summary_0034$r.squared, 4)
+intercept_0034 <- round(coef(model_0034)[1], 4)
+slope_0034 <- round(coef(model_0034)[2], 4)
+label_0034 <- paste0("y = ", slope_0034, "x + ", intercept_0034, "\nR² = ", r_squared_0034)
+
+x_pos <- quantile(df_combined$PM25_0034F, 0.05, na.rm = TRUE)  # 5th percentile for x
+y_pos <- quantile(df_combined$PM25_0034H, 0.95, na.rm = TRUE)  # 95th percentile for y
+
+ggplot(df_combined, aes(x = PM25_0034F, y = PM25_0034H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos, y = y_pos, label = label_0034, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0034: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+
+# Plot for Site 0038
+model_0038 <- lm(PM25_0038H ~ PM25_0038F, data = df_combined)
+summary_0038 <- summary(model_0038)
+r_squared_0038 <- round(summary_0038$r.squared, 4)
+intercept_0038 <- round(coef(model_0038)[1], 4)
+slope_0038 <- round(coef(model_0038)[2], 4)
+label_0038 <- paste0("y = ", slope_0038, "x + ", intercept_0038, "\nR² = ", r_squared_0038)
+
+x_pos <- quantile(df_combined$PM25_0038F, 0.05, na.rm = TRUE)
+y_pos <- quantile(df_combined$PM25_0038H, 0.95, na.rm = TRUE)
+
+ggplot(df_combined, aes(x = PM25_0038F, y = PM25_0038H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos, y = y_pos, label = label_0038, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0038: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+# Plot for Site 0045
+model_0045 <- lm(PM25_0045H ~ PM25_0045F, data = df_combined)
+summary_0045 <- summary(model_0045)
+r_squared_0045 <- round(summary_0045$r.squared, 4)
+intercept_0045 <- round(coef(model_0045)[1], 4)
+slope_0045 <- round(coef(model_0045)[2], 4)
+label_0045 <- paste0("y = ", slope_0045, "x + ", intercept_0045, "\nR² = ", r_squared_0045)
+
+x_pos_0045 <- quantile(df_combined$PM25_0045F, 0.05, na.rm = TRUE)
+y_pos_0045 <- quantile(df_combined$PM25_0045H, 0.95, na.rm = TRUE)
+
+ggplot(df_combined, aes(x = PM25_0045F, y = PM25_0045H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0045, y = y_pos_0045, label = label_0045, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0045: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+# Plot for Site 0060
+model_0060 <- lm(PM25_0060H ~ PM25_0060F, data = df_combined)
+summary_0060 <- summary(model_0060)
+r_squared_0060 <- round(summary_0060$r.squared, 4)
+intercept_0060 <- round(coef(model_0060)[1], 4)
+slope_0060 <- round(coef(model_0060)[2], 4)
+label_0060 <- paste0("y = ", slope_0060, "x + ", intercept_0060, "\nR² = ", r_squared_0060)
+
+x_pos_0060 <- quantile(df_combined$PM25_0060F, 0.05, na.rm = TRUE)
+y_pos_0060 <- quantile(df_combined$PM25_0060H, 0.95, na.rm = TRUE)
+
+ggplot(df_combined, aes(x = PM25_0060F, y = PM25_0060H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0060, y = y_pos_0060, label = label_0060, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0060: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+# Plot for Site 0065
+model_0065 <- lm(PM25_0065H ~ PM25_0065F, data = df_combined)
+summary_0065 <- summary(model_0065)
+r_squared_0065 <- round(summary_0065$r.squared, 4)
+intercept_0065 <- round(coef(model_0065)[1], 4)
+slope_0065 <- round(coef(model_0065)[2], 4)
+label_0065 <- paste0("y = ", slope_0065, "x + ", intercept_0065, "\nR² = ", r_squared_0065)
+
+x_pos_0065 <- quantile(df_combined$PM25_0065F, 0.05, na.rm = TRUE)
+y_pos_0065 <- quantile(df_combined$PM25_0065H, 0.95, na.rm = TRUE)
+
+ggplot(df_combined, aes(x = PM25_0065F, y = PM25_0065H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0065, y = y_pos_0065, label = label_0065, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0065: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+# Plot for Site 0073
+model_0073 <- lm(PM25_0073H ~ PM25_0073F, data = df_combined)
+summary_0073 <- summary(model_0073)
+r_squared_0073 <- round(summary_0073$r.squared, 4)
+intercept_0073 <- round(coef(model_0073)[1], 4)
+slope_0073 <- round(coef(model_0073)[2], 4)
+label_0073 <- paste0("y = ", slope_0073, "x + ", intercept_0073, "\nR² = ", r_squared_0073)
+
+x_pos_0073 <- quantile(df_combined$PM25_0073F, 0.05, na.rm = TRUE)
+y_pos_0073 <- quantile(df_combined$PM25_0073H, 0.95, na.rm = TRUE)
+
+ggplot(df_combined, aes(x = PM25_0073F, y = PM25_0073H)) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  annotate("text", x = x_pos_0073, y = y_pos_0073, label = label_0073, hjust = 0, vjust = 1, size = 5, fontface = "bold") +
+  labs(title = "Site 0073: Filter vs. Hourly Avg PM2.5", x = "24-Hour Filter PM2.5 (µg/m³)", y = "Daily Avg of Hourly PM2.5 (µg/m³)") +
+  coord_fixed() + theme_minimal()
+
+```
+```{r}
+summary_df <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Slope = c(slope_0034, slope_0038, slope_0045, slope_0060, slope_0065, slope_0073),
+  Intercept = c(intercept_0034, intercept_0038, intercept_0045, intercept_0060, intercept_0065, intercept_0073),
+  R2 = c(r_squared_0034, r_squared_0038, r_squared_0045, r_squared_0060, r_squared_0065, r_squared_0073)
+)
+summary_df
+```
+
+# 6x6 MATRIX PLOT OF FILTER DATA COMPARISONS.
+```{r epa-6x6-filter-grid, fig.width=22, fig.height=22, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gridExtra)
+
+# List of site numbers and their corresponding dataframes
+site_dfs <- list(
+  "0034" = df_0034,
+  "0038" = df_0038,
+  "0045" = df_0045,
+  "0060" = df_0060,
+  "0065" = df_0065,
+  "0073" = df_0073
+)
+
+# Create a combined daily average dataframe
+epa_24hr_clean <- bind_rows(
+  lapply(names(site_dfs), function(site) {
+    df <- site_dfs[[site]]
+    df %>%
+      filter(sample_duration == "24 HOUR") %>%
+      group_by(date_local) %>%
+      summarise(pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop") %>%
+      mutate(site_number = site, date = as.Date(date_local)) %>%
+      select(date, site_number, pm25)
+  })
+)
+
+# Prepare and reshape the data into wide format
+epa_wide <- epa_24hr_clean %>%
+  select(date, site_number, pm25) %>%
+  mutate(site_number = as.character(site_number)) %>%
+  pivot_wider(names_from = site_number, values_from = pm25, values_fn = mean) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
+
+# Set up plotting variables
+site_names <- sort(setdiff(names(epa_wide), "date"))
+n_sites <- length(site_names)
+axis_min <- 0
+axis_max <- 28
+
+# Create matrix of plots
+plot_matrix <- vector("list", n_sites * n_sites)
+
+for (i in seq_len(n_sites)) {
+  for (j in seq_len(n_sites)) {
+    x_site <- site_names[j]
+    y_site <- site_names[i]
+    index <- (i - 1) * n_sites + j
+
+    df_pair <- epa_wide %>%
+      select(x = all_of(x_site), y = all_of(y_site)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    if (nrow(df_pair) > 2) {
+      model <- lm(y ~ x, data = df_pair)
+      r2 <- round(summary(model)$r.squared, 2)
+      slope <- round(coef(model)[2], 2)
+      intercept <- round(coef(model)[1], 2)
+      label_text <- paste0("y = ", slope, "x + ", intercept, "\nR² = ", r2)
+    } else {
+      label_text <- "Insufficient data"
+    }
+
+    # Place label in top-left corner of the plot
+    x_pos <- axis_min + 1
+    y_pos <- axis_max - 1
+
+    p <- ggplot(df_pair, aes(x = x, y = y)) +
+      geom_point(color = "steelblue", alpha = 0.7, size = 1.8) +
+      geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 1) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+      coord_fixed(xlim = c(axis_min, axis_max), ylim = c(axis_min, axis_max)) +
+      labs(x = paste("Site", x_site), y = paste("Site", y_site)) +
+      annotate("text", x = x_pos, y = y_pos, label = label_text, hjust = 0, vjust = 1, size = 3.5) +
+      theme_minimal(base_size = 12) +
+      theme(
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 9),
+        plot.margin = margin(5, 5, 5, 5)
+      )
+
+    plot_matrix[[index]] <- p
+  }
+}
+
+# Display the 6x6 plot matrix
+grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
+
+print(grid_plot)
+
+```
+
+```{r}
+
+# Load libraries
+library(dplyr)
+library(geosphere)
+
+# Make sure epa_hourly_wide exists from previous steps
+
+# Coordinates for each site (replace with actual if needed)
+site_coords <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Longitude = c(-81.6936, -81.6393, -81.6050, -81.6275, -81.5442, -81.5983),
+  Latitude  = c(41.4993, 41.5292, 41.5656, 41.4609, 41.4619, 41.5368)
+)
+
+# Extract site IDs from hourly-wide data
+site_ids <- sort(setdiff(names(epa_hourly_wide), "date"))
+
+# Create empty data frame to hold results
+r2_vs_distance_hourly <- data.frame()
+
+# Loop through all site combinations (including self)
+for (i in seq_along(site_ids)) {
+  for (j in seq_along(site_ids)) {
+    site1 <- site_ids[i]
+    site2 <- site_ids[j]
+
+    # Extract paired data and clean NAs
+    df_pair <- epa_hourly_wide %>%
+      select(x = all_of(site1), y = all_of(site2)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    # Calculate R²
+    r2 <- if (nrow(df_pair) > 2) {
+      summary(lm(y ~ x, data = df_pair))$r.squared
+    } else {
+      NA
+    }
+
+    # Get coordinates for both sites
+    coord1 <- site_coords %>% filter(Site == site1) %>% select(Longitude, Latitude)
+    coord2 <- site_coords %>% filter(Site == site2) %>% select(Longitude, Latitude)
+
+    # Calculate distance in kilometers
+    dist_km <- distHaversine(coord1, coord2) / 1000
+
+    # Append to results table
+    r2_vs_distance_hourly <- rbind(
+      r2_vs_distance_hourly,
+      data.frame(
+        Site1 = site1,
+        Site2 = site2,
+        Distance_km = round(dist_km, 2),
+        R2 = round(r2, 3)
+      )
+    )
+  }
+}
+
+# Optional: sort by site pairs
+r2_vs_distance_hourly <- r2_vs_distance_hourly %>%
+  arrange(Site1, Site2)
+
+# View the result
+print(r2_vs_distance_hourly)
+```
+
+## 6x6 MATRIX PLOT FOR CONTINOUS DATA
+```{r epa-6x6-hourly-grid, fig.width=20, fig.height=20, echo=FALSE, message=FALSE, warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gridExtra)
+
+# Step 1: Create a list of site data frames
+site_dfs <- list(
+  "0034" = df_0034,
+  "0038" = df_0038,
+  "0045" = df_0045,
+  "0060" = df_0060,
+  "0065" = df_0065,
+  "0073" = df_0073
+)
+
+# Step 2: Generate daily averages from hourly data
+epa_hourly_daily_avg <- bind_rows(
+  lapply(names(site_dfs), function(site) {
+    df <- site_dfs[[site]]
+    df %>%
+      filter(sample_duration == "1 HOUR") %>%
+      group_by(date_local) %>%
+      summarise(pm25 = mean(sample_measurement, na.rm = TRUE), .groups = "drop") %>%
+      mutate(site_number = site, date = as.Date(date_local)) %>%
+      select(date, site_number, pm25)
+  })
+)
+
+# Step 3: Pivot to wide format
+epa_hourly_wide <- epa_hourly_daily_avg %>%
+  pivot_wider(names_from = site_number, values_from = pm25, values_fn = mean) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
+
+# Step 4: Set up for matrix plot
+site_names <- sort(setdiff(names(epa_hourly_wide), "date"))
+n_sites <- length(site_names)
+axis_min <- 0
+axis_max <- 28
+
+plot_matrix <- vector("list", n_sites * n_sites)
+
+for (i in seq_len(n_sites)) {
+  for (j in seq_len(n_sites)) {
+    x_site <- site_names[j]
+    y_site <- site_names[i]
+    index <- (i - 1) * n_sites + j
+
+    df_pair <- epa_hourly_wide %>%
+      select(x = all_of(x_site), y = all_of(y_site)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    if (nrow(df_pair) > 2) {
+      model <- lm(y ~ x, data = df_pair)
+      r2 <- round(summary(model)$r.squared, 2)
+      slope <- round(coef(model)[2], 2)
+      intercept <- round(coef(model)[1], 2)
+      label_text <- paste0("y = ", slope, "x + ", intercept, "\nR² = ", r2)
+    } else {
+      label_text <- "Insufficient data"
+    }
+
+    x_pos <- axis_min + 1
+    y_pos <- axis_max - 1
+
+    p <- ggplot(df_pair, aes(x = x, y = y)) +
+      geom_point(color = "steelblue", alpha = 0.7, size = 1.8) +
+      geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 1) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+      coord_fixed(xlim = c(axis_min, axis_max), ylim = c(axis_min, axis_max)) +
+      labs(x = paste("Site", x_site), y = paste("Site", y_site)) +
+      annotate("text", x = x_pos, y = y_pos, label = label_text, hjust = 0, vjust = 1, size = 3.5) +
+      theme_minimal(base_size = 12) +
+      theme(
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 9),
+        plot.margin = margin(5, 5, 5, 5)
+      )
+
+    plot_matrix[[index]] <- p
+  }
+}
+
+# Step 5: Display matrix plot
+grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
+
+print(grid_plot)
+```
+
+```{r}
+# Create site_coords: mean coordinates per site
+site_coords <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Latitude = c(mean(df_0034$latitude, na.rm = TRUE),
+               mean(df_0038$latitude, na.rm = TRUE),
+               mean(df_0045$latitude, na.rm = TRUE),
+               mean(df_0060$latitude, na.rm = TRUE),
+               mean(df_0065$latitude, na.rm = TRUE),
+               mean(df_0073$latitude, na.rm = TRUE)),
+  Longitude = c(mean(df_0034$longitude, na.rm = TRUE),
+                mean(df_0038$longitude, na.rm = TRUE),
+                mean(df_0045$longitude, na.rm = TRUE),
+                mean(df_0060$longitude, na.rm = TRUE),
+                mean(df_0065$longitude, na.rm = TRUE),
+                mean(df_0073$longitude, na.rm = TRUE))
+)
+```
+
+```{r}
+library(geosphere)  # For distance calculation
+
+# Get site IDs from epa_wide
+site_ids <- sort(setdiff(names(epa_wide), "date"))
+
+# Create distance + R² table
+r2_vs_distance <- data.frame()
+
+# Loop through all **unique pairs**
+for (i in 1:length(site_ids)) {
+  for (j in 1:length(site_ids)) {
+    site1 <- site_ids[i]
+    site2 <- site_ids[j]
+    
+    # Prepare data for regression
+   df_pair <- epa_wide %>%
+      select(x = all_of(site1), y = all_of(site2)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    # Compute R² if enough data
+    r2 <- if (nrow(df_pair) > 2) {
+      summary(lm(y ~ x, data = df_pair))$r.squared
+    } else {
+      NA
+    }
+
+    # Get coordinates
+    coord1 <- site_coords %>% filter(Site == site1) %>% select(Longitude, Latitude)
+    coord2 <- site_coords %>% filter(Site == site2) %>% select(Longitude, Latitude)
+
+    # Calculate distance in km
+    dist_km <- distHaversine(coord1, coord2) / 1000
+
+    # Add to table
+    r2_vs_distance <- rbind(
+      r2_vs_distance,
+      data.frame(
+        Site1 = site1,
+        Site2 = site2,
+        Distance_km = round(dist_km, 2),
+        R2 = round(r2, 3)
+      )
+    )
+  }
+}
+
+# View the table
+print(r2_vs_distance)
+
+
+
+```
+
+
+
+```{r}
+# Combine all 24-hour filter data
+df_combined_24hr <- all_dates %>%
+  left_join(df_0034_24hr, by = "date_local") %>%
+  left_join(df_0038_24hr, by = "date_local") %>%
+  left_join(df_0045_24hr, by = "date_local") %>%
+  left_join(df_0060_24hr, by = "date_local") %>%
+  left_join(df_0065_24hr, by = "date_local") %>%
+  left_join(df_0073_24hr, by = "date_local")
+```
+
+
+```{r}
+# Load required packages
+library(ggplot2)
+library(dplyr)
+
+# Remove self-comparisons (where Site1 == Site2)
+r2_vs_distance_filtered <- r2_vs_distance %>%
+  filter(Site1 != Site2) %>%
+  rowwise() %>%
+  mutate(pair_id = paste(sort(c(Site1, Site2)), collapse = "-")) %>%
+  ungroup() %>%
+  distinct(pair_id, .keep_all = TRUE)
+
+# Plot
+ggplot(r2_vs_distance_filtered, aes(x = Distance_km, y = R2, color = Site1)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_text(aes(label = Site2), vjust = -0.6, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "red") +
+  labs(
+    title = "R² vs. Distance Between Site Pairs",
+    subtitle = "Each point represents one pair of sites (Site1 → Site2)",
+    x = "Distance (km)",
+    y = "R² (PM2.5 Agreement)",
+    color = "Reference Site (Site1)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    legend.position = "bottom"
+  )
+
+```
+
+
+## Load CLEANinCLE data
+```{r}
+library(readr)
+cleanincle_data <- read_csv("~/Documents/R_Projects/Air_pollution_Projects/CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+names(cleanincle_data)
+
+library(dplyr)
+
+# CLEANinCLE Site Coordinates
+CinC_coords <- cleanincle_data %>%
+  select(site = location_name, lat = latitude, lon = longitude) %>%
+  distinct()
+
+```
+
+```{r}
+site_coords <- data.frame(
+  Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  Longitude = c(-81.6936, -81.6393, -81.6050, -81.6275, -81.5442, -81.5983),
+  Latitude  = c(41.4993, 41.5292, 41.5656, 41.4609, 41.4619, 41.5368)
+)
+
+library(geosphere)
+
+# Create a dataframe to store matches
+CinC_nearest_epa <- data.frame()
+
+# Loop through each CinC site and find closest EPA site
+for (i in 1:nrow(CinC_coords)) {
+  CinC_site <- CinC_coords[i, ]
+  
+  # Calculate distances to all EPA sites
+  distances <- distHaversine(
+    matrix(c(CinC_site$lon, CinC_site$lat), ncol = 2),
+    matrix(c(site_coords$Longitude, site_coords$Latitude), ncol = 2)
+  )
+  
+  # Get index of the closest EPA site
+  min_index <- which.min(distances)
+  
+  # Append result
+  CinC_nearest_epa <- rbind(
+    CinC_nearest_epa,
+    data.frame(
+      CinC_Site = CinC_site$site,
+      CinC_Lat = CinC_site$lat,
+      CinC_Lon = CinC_site$lon,
+      Closest_EPA_Site = site_coords$Site[min_index],
+      EPA_Lat = site_coords$Latitude[min_index],
+      EPA_Lon = site_coords$Longitude[min_index],
+      Distance_km = round(distances[min_index] / 1000, 2)
+    )
+  )
+}
+
+# View results
+print(CinC_nearest_epa)
+```
+
+# Create CinC_daily_avg
+```{r}
+library(dplyr)
+library(lubridate)
+
+epa_site_data <- list(
+  "0034" = df_0034,
+  "0038" = df_0038,
+  "0045" = df_0045,
+  "0060" = df_0060,
+  "0065" = df_0065,
+  "0073" = df_0073
+)
+
+CinC_daily_avg <- cleanincle_data %>%
+  filter(measure_name == "mc_pm2_5") %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(
+    pm25 = mean(value, na.rm = TRUE),
+    latitude = first(latitude),
+    longitude = first(longitude),
+    .groups = "drop"
+  )
+glimpse(CinC_daily_avg)
+
+library(dplyr)
+library(purrr)
+
+# Assuming epa_site_data is your list of EPA site data (e.g., list(df_0034, df_0038, ...))
+
+epa_filter_avg <- map2_dfr(epa_site_data, names(epa_site_data), function(df, site) {
+  df %>%
+    filter(sample_duration == "24 HOUR") %>%
+    group_by(date_local) %>%
+    summarise(
+      pm25 = mean(sample_measurement, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    rename(Date = date_local) %>%
+    mutate(Site = site)
+})
+
+# Create epa_filter_avg
+epa_filter_avg <- purrr::map2_dfr(epa_site_data, names(epa_site_data), function(df, site) {
+  df %>%
+    dplyr::filter(sample_duration == "24 HOUR") %>%
+    dplyr::group_by(date_local) %>%
+    dplyr::summarise(
+      pm25 = mean(sample_measurement, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    dplyr::rename(Date = date_local) %>%
+    dplyr::mutate(Site = site)
+})
+
+# Generate EPA Continuous Daily Averages
+epa_hourly_daily_avg <- purrr::map2_dfr(epa_site_data, names(epa_site_data), function(df, site) {
+  df %>%
+    dplyr::filter(sample_duration == "1 HOUR") %>%
+    dplyr::group_by(date_local) %>%
+    dplyr::summarise(
+      pm25 = mean(sample_measurement, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    dplyr::rename(Date = date_local) %>%
+    dplyr::mutate(Site = site)
+})
+
+# Standardize Column Names in CinC_pm25
+CinC_pm25 <- CinC_pm25 %>%
+  dplyr::rename(Date = date, PM25 = pm25)
+```
+
+
+```{r}
+library(ggplot2)
+
+plot_CinC_vs_EPA <- function(CinC_data, EPA_data, label) {
+  # Join CinC and EPA based on site and date
+  matched_data <- dplyr::inner_join(
+    CinC_data,
+    EPA_data,
+    by = c("epa_site" = "Site", "Date" = "Date"),
+    suffix = c("_CinC", "_EPA")
+  )
+  
+  # Create plot
+  ggplot(matched_data, aes(x = pm25_EPA, y = PM25_CinC)) +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    labs(
+      x = paste0("EPA ", label, " PM2.5"),
+      y = "CinC PM2.5",
+      title = paste("CinC vs EPA", label, "PM2.5")
+    ) +
+    theme_minimal()
+}
+
+# CinC vs EPA Filter
+CinC_vs_Filter_plot <- plot_CinC_vs_EPA(CinC_pm25, epa_filter_avg, label = "Filter")
+
+# CinC vs EPA Continuous
+CinC_vs_Continuous_plot <- plot_CinC_vs_EPA(CinC_pm25, epa_hourly_daily_avg, label = "Continuous")
+
+
+print(CinC_vs_Filter_plot)
+print(CinC_vs_Continuous_plot)
+```
+```{r}
+# Step 1: Rename columns for clarity
+CinC_clean <- CinC_pm25 %>%
+  rename(
+    pm25_CinC = PM25
+  )
+
+epa_filter_clean <- epa_filter_avg %>%
+  rename(
+    epa_site = Site,
+    pm25_EPA = pm25
+  )
+
+# Step 2: Merge datasets by date and epa_site
+CinC_vs_Filter <- CinC_clean %>%
+  inner_join(epa_filter_clean, by = c("epa_site", "Date"))
+
+# Step 3: Create the plot
+library(ggplot2)
+
+CinC_vs_Filter_plot <- ggplot(CinC_vs_Filter, aes(x = pm25_EPA, y = pm25_CinC)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, color = "gray40", linetype = "dashed") +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue") +
+  labs(
+    title = "CinC vs EPA Filtered PM2.5",
+    x = "EPA PM2.5 (Filtered)",
+    y = "CinC PM2.5"
+  ) +
+  theme_minimal()
+
+# Step 4: View the plot
+print(CinC_vs_Filter_plot)
+```
+
+# Create CinC_vs_Continuous for Plotting
+```{r}
+# Rename for consistent joining
+names(CinC_pm25) <- c("device_number", "Date", "pm25_CinC", "latitude", "longitude", "epa_site")
+names(epa_hourly_daily_avg) <- c("Date", "pm25_EPA", "Site")
+
+# Merge CinC and EPA (Continuous) data
+CinC_vs_Continuous <- CinC_pm25 %>%
+  inner_join(epa_hourly_daily_avg, by = c("Date", "epa_site" = "Site")) %>%
+  filter(!is.na(pm25_CinC) & !is.na(pm25_EPA))
+
+glimpse(CinC_vs_Continuous)
+
+
+
+ggplot(CinC_vs_Continuous, aes(x = pm25_EPA, y = pm25_CinC)) +
+  geom_point(alpha = 0.6, color = "blue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  geom_smooth(method = "lm", se = FALSE, color = "darkgreen") +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    title = "CinC vs EPA Continuous PM2.5 (Log Scale)",
+    x = "EPA PM2.5 (log scale)",
+    y = "CinC PM2.5 (log scale)"
+  ) +
+  theme_minimal()
+
+
+ggplot(CinC_vs_Continuous, aes(x = pm25_EPA, y = pm25_CinC)) +
+  geom_point(alpha = 0.6, color = "blue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  geom_smooth(method = "lm", se = FALSE, color = "darkgreen") +
+  coord_fixed(ratio = 1) +
+  xlim(0, 30) + ylim(0, 30) +
+  labs(
+    title = "CinC vs EPA Continuous PM2.5 (Zoomed)",
+    x = "EPA PM2.5 (Continuous)",
+    y = "CinC PM2.5"
+  ) +
+  theme_minimal()
+
+print(CinC_vs_Continuous_plot)
+```
+
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(purrr)
+
+# Optional: set consistent axis limits if desired
+x_limits <- c(0, 35)
+y_limits <- c(0, 35)
+
+# Split data by device_number
+CinC_split <- split(CinC_vs_Continuous, CinC_vs_Continuous$device_number)
+
+# Function to create plot for one device
+plot_device <- function(df) {
+  device_id <- unique(df$device_number)
+  
+  ggplot(df, aes(x = pm25_EPA, y = pm25_CinC)) +
+    geom_point(alpha = 0.6, color = "blue") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+    geom_smooth(method = "lm", se = FALSE, color = "darkgreen") +
+    coord_fixed(ratio = 1, xlim = x_limits, ylim = y_limits) +
+    labs(
+      title = paste("CinC vs EPA Continuous PM2.5 for Device", device_id),
+      x = "EPA PM2.5 (Continuous)",
+      y = "CinC PM2.5"
+    ) +
+    theme_minimal()
+}
+
+# Apply to each device
+CinC_vs_Continuous_plots <- map(CinC_split, plot_device)
+
+# Display plots (example: display first one)
+print(CinC_vs_Continuous_plots[[1]])
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(purrr)
+
+# Set consistent axis limits for fair comparison
+x_limits <- c(0, 35)
+y_limits <- c(0, 35)
+
+# Split by device number
+CinC_split <- split(CinC_vs_Continuous, CinC_vs_Continuous$device_number)
+
+# Function to plot for one device
+plot_device <- function(df) {
+  device_id <- unique(df$device_number)
+  
+  ggplot(df, aes(x = pm25_EPA, y = pm25_CinC)) +
+    geom_point(alpha = 0.6, color = "blue") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+    geom_smooth(method = "lm", se = FALSE, color = "darkgreen") +
+    coord_fixed(ratio = 1, xlim = x_limits, ylim = y_limits) +
+    labs(
+      title = paste("Device", device_id),
+      x = "EPA PM2.5",
+      y = "CinC PM2.5"
+    ) +
+    theme_minimal(base_size = 12)
+}
+
+# Generate all plots
+CinC_vs_Continuous_plots <- map(CinC_split, plot_device)
+
+```
+
+```{r}
+# Optional: save the site pair mapping
+write_csv(closest_matches, "matched_CinC_EPA_pairs.csv")
+
+closest_matches_clean <- closest_matches %>%
+  group_by(device_number) %>%
+  slice_min(distance_km, n = 1) %>%
+  ungroup()
+
+closest_matches_clean %>%
+  count(device_number) %>%
+  filter(n > 1)  # should return 0 rows
+
+# Join the CinC PM2.5 data with the closest EPA site info
+CinC_pm25 <- CinC_daily_avg %>%
+  left_join(
+    closest_matches %>% select(device_number, epa_site),
+    by = "device_number"
+  )
+
+# Example structure
+glimpse(epa_filter_avg)
+
+
+glimpse(epa_hourly_daily_avg)
+
+```
+
+# Create CinC vs EPA X–Y Comparison Function
+```{r}
+library(ggplot2)
+
+plot_CinC_vs_EPA <- function(cinc_df, epa_df, label, output_list = TRUE) {
+  plots <- list()
+  
+  # Loop over matched pairs
+  for (i in seq_len(nrow(closest_matches_clean))) {
+    cinc_site <- closest_matches_clean$device_number[i]
+    epa_site <- closest_matches_clean$epa_site[i]
+    
+    cinc_data <- cinc_df %>%
+      filter(device_number == cinc_site)
+    
+    epa_data <- epa_df %>%
+      filter(Site == epa_site)
+    
+    merged <- inner_join(cinc_data, epa_data, by = c("date" = "Date"))
+    
+    if (nrow(merged) > 0) {
+      p <- ggplot(merged, aes(x = pm25.y, y = pm25.x)) +
+        geom_point(alpha = 0.6) +
+        geom_smooth(method = "lm", se = FALSE, color = "blue") +
+        geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+        labs(
+          title = paste("CinC vs EPA", label, "\nCinC:", cinc_site, " | EPA:", epa_site),
+          x = paste("EPA", label, "PM2.5 (µg/m³)"),
+          y = "CinC PM2.5 (µg/m³)"
+        ) +
+        theme_minimal()
+      
+      plots[[paste0("CinC_", cinc_site, "_vs_EPA_", epa_site)]] <- p
+    }
+  }
+  
+  if (output_list) return(plots)
+}
+
+
+# CinC vs EPA Filter
+CinC_vs_Filter_plots <- plot_CinC_vs_EPA(CinC_pm25, epa_filter_avg, label = "Filter")
+
+# CinC vs EPA Continuous
+CinC_vs_Continuous_plots <- plot_CinC_vs_EPA(CinC_pm25, epa_hourly_daily_avg, label = "Continuous")
+```
+
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(readr)
+library(geosphere)
+
+# -------- STEP 1: Combine and Save EPA Site Data --------
+# Assuming 'epa_data_list' already contains all 5 sites
+
+epa_all_data <- bind_rows(epa_data_list, .id = "site_number")
+
+# Save EPA data for future use
+write_csv(epa_all_data, "epa_pm25_site_combined.csv")
+
+# -------- STEP 2: Load EPA and CLEANinCLE Datasets --------
+
+# Load the just-saved EPA file
+epa_data <- read_csv("epa_pm25_site_combined.csv")
+
+# Load CLEANinCLE file (replace with your exact path if needed)
+cleanincle_data <- read_csv("~/Documents/R_Projects/Air_pollution_Projects/CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# -------- STEP 3: Extract Unique Locations --------
+
+epa_sites <- epa_data %>%
+  select(site_number, latitude, longitude) %>%
+  distinct()
+
+cleanincle_sites <- cleanincle_data %>%
+  select(location_name, device_number, device_eui, latitude, longitude) %>%
+  distinct()
+
+# Compute Pairwise Distances --------
+
+distance_table <- expand.grid(
+  epa_site = epa_sites$site_number,
+  cleancle_device = cleanincle_sites$device_number
+) %>%
+  left_join(epa_sites, by = c("epa_site" = "site_number")) %>%
+  left_join(cleanincle_sites, by = c("cleancle_device" = "device_number")) %>%
+  mutate(
+    distance_km = distHaversine(
+      cbind(longitude.x, latitude.x),
+      cbind(longitude.y, latitude.y)
+    ) / 1000
+  )
+
+#write_csv(distance_table, "epa_all_distances.csv")
+
+# Closest Device to Each EPA Site --------
+
+closest_matches <- distance_table %>%
+  group_by(epa_site) %>%
+  slice_min(distance_km, n = 1) %>%
+  ungroup() %>%
+  select(
+    epa_site,
+    epa_lat = latitude.x,
+    epa_lon = longitude.x,
+    cleancle_location = location_name,
+    device_number = cleancle_device,
+    device_eui,
+    cleancle_lat = latitude.y,
+    cleancle_lon = longitude.y,
+    distance_km
+  )
+
+# View and Save Result 
+
+print(closest_matches)
+
+```
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+# Filter to only PM2.5 and compute daily average
+CinC_pm25_daily <- cleanincle_data %>%
+  filter(measure_name == "PM2.5") %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+
+# Devices That Match Closest to EPA Sites
+device_site <- data.frame(
+  device_number = c("231081", "231083", "231091", "231088", "231080", "231074"),  # example device numbers
+  epa_site = c("0034", "0038", "0045", "0060", "0065", "0073")                    # matching EPA sites
+)
+
+
+# Join PM2.5 Data with Site Mapping
+CinC_pm25_labeled <- CinC_pm25_daily %>%
+  mutate(device_number = as.character(device_number)) %>%  
+  inner_join(device_site, by = "device_number")
+
+# Pivot to Wide Format
+CinC_pm25_wide <- CinC_pm25_labeled %>%
+  select(date, epa_site, pm25) %>%
+  pivot_wider(names_from = epa_site, values_from = pm25) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
+```
+
+
+```{r}
+library(tidyr)
+library(dplyr)
+
+# Pivot data into wide format: one column per site
+CinC_wide <- CinC_pm25_labeled %>%
+  select(date, epa_site, pm25) %>%
+  pivot_wider(
+    names_from = epa_site,
+    values_from = pm25,
+    values_fn = mean
+  ) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
+
+
+```
+
+
+```{r}
+library(dplyr)
+library(geosphere)
+
+# Step 1: Get unique CinC device coordinates
+CinC_coords <- cleanincle_data %>%
+  select(device_number, latitude, longitude) %>%
+  distinct()
+
+# Step 2: Define EPA coordinates (you should have this already as 'site_coords')
+# Example format (replace with your actual table if different):
+# site_coords <- data.frame(
+#   Site = c("0034", "0038", "0045", "0060", "0065", "0073"),
+#   Latitude = c(...),
+#   Longitude = c(...)
+# )
+
+# Step 3: Map each CinC device to the nearest EPA site
+device_to_epa_map <- CinC_coords %>%
+  rowwise() %>%
+  mutate(
+    nearest_epa = site_coords$Site[which.min(
+      distHaversine(c(longitude, latitude), site_coords[, c("Longitude", "Latitude")])
+    )]
+  ) %>%
+  ungroup() %>%
+  rename(epa_site = nearest_epa)
+
+# Preview the mapping table
+head(device_to_epa_map)
+```
+
+```{r}
+CinC_pm25 <- cleanincle_data %>%
+  filter(measure_name == "pm2.5") %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date) %>%
+  summarise(pm25 = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  inner_join(device_to_epa_map, by = "device_number")
+
+# Pivot CinC_pm25 into Wide Format
+library(tidyr)
+
+CinC_wide <- CinC_pm25 %>%
+  group_by(epa_site, date) %>%
+  summarise(pm25 = mean(pm25, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = epa_site, values_from = pm25) %>%
+  filter(rowSums(is.na(across(-date))) < 3)
+
+# Check the structure
+head(CinC_wide)
+```
+
+# Create 6x6 Matrix of Comparisons (Hourly-Averaged CinC Data)
+```{r}
+library(ggplot2)
+library(gridExtra)
+
+site_names <- sort(setdiff(names(CinC_wide), "date"))
+n_sites <- length(site_names)
+axis_min <- 0
+axis_max <- 28
+plot_matrix <- vector("list", n_sites * n_sites)
+
+for (i in seq_len(n_sites)) {
+  for (j in seq_len(n_sites)) {
+    x_site <- site_names[j]
+    y_site <- site_names[i]
+    index <- (i - 1) * n_sites + j
+
+    df_pair <- CinC_wide %>%
+      select(x = all_of(x_site), y = all_of(y_site)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    if (nrow(df_pair) > 2) {
+      model <- lm(y ~ x, data = df_pair)
+      r2 <- round(summary(model)$r.squared, 2)
+      slope <- round(coef(model)[2], 2)
+      intercept <- round(coef(model)[1], 2)
+      label_text <- paste0("y = ", slope, "x + ", intercept, "\nR² = ", r2)
+    } else {
+      label_text <- "Insufficient data"
+    }
+
+    x_pos <- axis_min + 1
+    y_pos <- axis_max - 1
+
+    p <- ggplot(df_pair, aes(x = x, y = y)) +
+      geom_point(color = "steelblue", alpha = 0.7, size = 1.8) +
+      geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 1) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+      coord_fixed(xlim = c(axis_min, axis_max), ylim = c(axis_min, axis_max)) +
+      labs(x = paste("Site", x_site), y = paste("Site", y_site)) +
+      annotate("text", x = x_pos, y = y_pos, label = label_text, hjust = 0, vjust = 1, size = 3.5) +
+      theme_minimal(base_size = 12) +
+      theme(
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 9),
+        plot.margin = margin(5, 5, 5, 5)
+      )
+
+    plot_matrix[[index]] <- p
+  }
+}
+
+grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
+print(grid_plot)
+
+CinC_EPA_daily_compare <- CinC_pm25 %>%
+  inner_join(epa_daily_avg_all_sites, by = c("epa_site" = "Site", "date" = "Date")) %>%
+  rename(CinC = pm25, EPA = PM25)
+```
+
+# Step 5: Generate R² vs Distance Table for CinC (Hourly-Averaged Data)
+```{r}
+library(geosphere)  # For distance calculation
+
+# Get CinC site IDs from wide data
+site_ids <- sort(setdiff(names(CinC_wide), "date"))
+
+# Create distance + R² table
+CinC_r2_vs_distance <- data.frame()
+
+for (i in 1:length(site_ids)) {
+  for (j in 1:length(site_ids)) {
+    site1 <- site_ids[i]
+    site2 <- site_ids[j]
+
+    df_pair <- CinC_wide %>%
+      select(x = all_of(site1), y = all_of(site2)) %>%
+      filter(!is.na(x) & !is.na(y))
+
+    r2 <- if (nrow(df_pair) > 2) {
+      summary(lm(y ~ x, data = df_pair))$r.squared
+    } else {
+      NA
+    }
+
+    # Get EPA site coordinates (since CinC sites were matched to EPA sites)
+    coord1 <- site_coords %>% filter(Site == site1) %>% select(Longitude, Latitude)
+    coord2 <- site_coords %>% filter(Site == site2) %>% select(Longitude, Latitude)
+
+    dist_km <- distHaversine(coord1, coord2) / 1000
+
+    CinC_r2_vs_distance <- rbind(
+      CinC_r2_vs_distance,
+      data.frame(
+        Site1 = site1,
+        Site2 = site2,
+        Distance_km = round(dist_km, 2),
+        R2 = round(r2, 3)
+      )
+    )
+  }
+}
+
+# View result
+print(CinC_r2_vs_distance)
+
+```
+
+
+# Load and clean the CinC raw data
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(readr)
+library(lubridate)
+
+# STEP 1: Load the CLEANinCLE data
+cleanincle_data <- read_csv("~/Documents/R_Projects/Air_pollution_Projects/CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# STEP 2: Convert time and filter for PM2.5 only
+CinC_pm25 <- cleanincle_data %>%
+  mutate(datetime = ymd_hms(time, tz = "UTC"),
+         date = as.Date(datetime)) %>%
+  filter(measure_name == "pm25") %>%
+  group_by(device_number, date) %>%
+  summarise(pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+```
+
+# 
+```{r}
+epa_coords <- bind_rows(
+  lapply(names(site_dfs), function(site) {
+    df <- site_dfs[[site]]
+    df %>%
+      select(site_number, latitude, longitude) %>%
+      distinct() %>%
+      mutate(site_number = site)
+  })
+)
+
+print(epa_coords)
+```
+
+
+```{r}
+library(dplyr)
+
+cinc_coords <- cleanincle_data %>%
+  select(device_number, latitude, longitude) %>%
+  distinct()
+
+library(geosphere)
+
+# Create all combinations of CinC devices and EPA sites
+cinc_epa_pairs <- expand.grid(
+  device_number = cinc_coords$device_number,
+  site_number = epa_coords$site_number,
+  stringsAsFactors = FALSE
+)
+
+# Add coordinates to each pair
+cinc_epa_pairs <- cinc_epa_pairs %>%
+  left_join(cinc_coords, by = "device_number") %>%
+  rename(cinc_lat = latitude, cinc_lon = longitude) %>%
+  left_join(epa_coords, by = "site_number") %>%
+  rename(epa_lat = latitude, epa_lon = longitude)
+
+# Compute distance in meters
+cinc_epa_pairs <- cinc_epa_pairs %>%
+  rowwise() %>%
+  mutate(distance_m = distHaversine(c(cinc_lon, cinc_lat), c(epa_lon, epa_lat))) %>%
+  ungroup()
+
+
+closest_matches <- cinc_epa_pairs %>%
+  group_by(device_number) %>%
+  slice_min(distance_m, n = 1) %>%
+  ungroup()
+
+print(closest_matches)
+```
+
+```{r}
+# Add epa_site column to CinC data
+CinC_data_with_sites <- cleanincle_data %>%
+  left_join(closest_matches %>% select(device_number, site_number), by = "device_number") %>%
+  rename(epa_site = site_number)
+
+library(lubridate)
+
+CinC_pm25 <- CinC_data_with_sites %>%
+  filter(measure_name == "PM2.5") %>%
+  mutate(date = as.Date(time)) %>%
+  group_by(device_number, date, epa_site) %>%
+  summarise(pm25 = mean(value, na.rm = TRUE), .groups = "drop")
+
+
+```
+
+# RESTARTING
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(purrr)
+
+plot_CinC_vs_EPA <- function(data, label = "Filtered") {
+  # Get min and max across all PM2.5 values to fix axis scale
+  axis_limits <- range(c(data$pm25_CinC, data$pm25_EPA), na.rm = TRUE)
+  
+  # Split the data by device number
+  device_plots <- split(data, data$device_number)
+  
+  # Generate a list of plots
+  plots <- map(device_plots, function(df) {
+    ggplot(df, aes(x = pm25_EPA, y = pm25_CinC)) +
+      geom_point(alpha = 0.6) +
+      geom_smooth(method = "lm", se = FALSE, color = "steelblue", size = 1.2) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+      coord_fixed(xlim = axis_limits, ylim = axis_limits) +
+      labs(
+        title = paste("CinC vs EPA", label, "- Device", unique(df$device_number)),
+        x = paste("EPA PM2.5 (", label, ")", sep = ""),
+        y = "CinC PM2.5"
+      ) +
+      theme_minimal(base_size = 13)
+  })
+  
+  return(plots)
+}
+```
+
+
+# EPA Filtered and Continous
+```{r}
+library(dplyr)
+
+# Standardize columns before join
+CinC_clean <- CinC_pm25 %>%
+  rename(Date = date, PM25 = pm25)
+
+# Join with EPA filtered data
+CinC_vs_Filter <- CinC_clean %>%
+  inner_join(epa_filter_avg, by = c("Date", "epa_site" = "Site")) %>%
+  rename(pm25_CinC = PM25, pm25_EPA = pm25)
+
+# Join with EPA continuous daily avg
+CinC_vs_Continuous <- CinC_clean %>%
+  inner_join(epa_hourly_daily_avg, by = c("Date", "epa_site" = "Site")) %>%
+  rename(pm25_CinC = PM25, pm25_EPA = PM25)  # If both columns are called PM25
+```
+
+```{r}
+library(ggplot2)
+
+plot_CinC_vs_EPA <- function(data, title_prefix) {
+  unique_devices <- unique(data$device_number)
+
+  for (dev in unique_devices) {
+    dev_data <- data %>% filter(device_number == dev)
+    
+    # Get axis limits
+    lims <- range(c(dev_data$pm25_CinC, dev_data$pm25_EPA), na.rm = TRUE)
+
+    p <- ggplot(dev_data, aes(x = pm25_EPA, y = pm25_CinC)) +
+      geom_point(alpha = 0.6) +
+      geom_smooth(method = "lm", se = FALSE, color = "steelblue", size = 1) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray40") +
+      coord_fixed(ratio = 1, xlim = lims, ylim = lims) +
+      labs(
+        title = paste0(title_prefix, ": Device ", dev),
+        x = "EPA PM2.5",
+        y = "CinC PM2.5"
+      ) +
+      theme_minimal(base_size = 14)
+
+    print(p)
+  }
+}
+
+# For Filtered
+plot_CinC_vs_EPA(CinC_vs_Filter, title_prefix = "CinC vs EPA Filtered")
+
+# For Continuous
+plot_CinC_vs_EPA(CinC_vs_Continuous, title_prefix = "CinC vs EPA Continuous")
+```
+
+# Join CinC_pm25 with epa_hourly_daily_avg
+```{r}
+# Standardize and rename if needed
+CinC_clean <- CinC_pm25 %>%
+  rename(Date = date, pm25_CinC = pm25)
+
+# Now join using standardized names
+CinC_vs_Continuous <- CinC_clean %>%
+  inner_join(epa_hourly_daily_avg, by = c("Date", "epa_site" = "Site"))
+
+library(ggplot2)
+# Find shared axis limits (rounded a bit for visual clarity)
+axis_lim <- range(c(CinC_vs_Continuous$pm25_EPA, CinC_vs_Continuous$pm25_CinC), na.rm = TRUE)
+axis_lim <- c(0, ceiling(max(axis_lim)))  # Start at 0 and round up
+
+ggplot(CinC_vs_Continuous, aes(x = pm25_EPA, y = pm25_CinC)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue", size = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  scale_x_continuous(limits = axis_lim) +
+  scale_y_continuous(limits = axis_lim) +
+  labs(
+    title = "CinC vs EPA Continuous PM2.5",
+    x = "EPA PM2.5 (Continuous)",
+    y = "CinC PM2.5"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+
+# Define shared axis limits across all devices
+axis_lim <- range(c(CinC_vs_Continuous$pm25_EPA, CinC_vs_Continuous$pm25_CinC), na.rm = TRUE)
+axis_lim <- c(0, ceiling(max(axis_lim)))  # Start from 0
+
+library(ggplot2)
+library(dplyr)
+
+# Get unique device numbers
+device_ids <- unique(CinC_vs_Continuous$device_number)
+
+# Define consistent axis limits
+axis_lim <- range(c(CinC_vs_Continuous$pm25_EPA, CinC_vs_Continuous$pm25_CinC), na.rm = TRUE)
+axis_lim <- c(0, ceiling(max(axis_lim)))
+
+# Loop through each device and print plot
+for (device in device_ids) {
+  
+  device_data <- CinC_vs_Continuous %>% 
+    filter(device_number == device)
+  
+  p <- ggplot(device_data, aes(x = pm25_EPA, y = pm25_CinC)) +
+    geom_point(alpha = 0.6, color = "black") +
+    geom_smooth(method = "lm", se = FALSE, color = "steelblue", size = 1) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+    scale_x_continuous(limits = axis_lim) +
+    scale_y_continuous(limits = axis_lim) +
+    labs(
+      title = paste("CinC vs EPA Continuous PM2.5 — Device", device),
+      x = "EPA PM2.5 (Continuous)",
+      y = "CinC PM2.5"
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p)
+}
+```
+
+```{r}
+CinC_filtered <- CinC_pm25 %>%
+  rename(Date = date, pm25_CinC = pm25)
+
+filter_dates <- epa_filter_avg %>%
+  select(Date) %>%
+  distinct()
+
+epa_continuous_filtered <- epa_hourly_daily_avg %>%
+  semi_join(filter_dates, by = "Date")
+
+CinC_vs_Continuous_FilterDates <- CinC_filtered %>%
+  inner_join(epa_continuous_filtered, by = c("Date", "epa_site" = "Site"))
+
+unique_devices <- unique(CinC_vs_Filter$device_number)
+
+for (dev in unique_devices) {
+  df_sub <- CinC_vs_Filter %>% filter(device_number == dev)
+
+ # Define the same axis limits for both X and Y
+axis_lim <- c(0, 50)  # You can increase to 50 if needed
+
+ggplot(df_sub, aes(x = pm25_EPA, y = pm25_CinC)) +
+  geom_point(alpha = 0.7, color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue", size = 1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+  scale_x_continuous(limits = axis_lim) +
+  scale_y_continuous(limits = axis_lim) +
+  coord_fixed() +  # Enforce 1:1 aspect ratio
+  labs(
+    title = paste("CinC vs EPA Filtered PM2.5 - Device", dev),
+    x = "EPA PM2.5 (Filter)",
+    y = "CinC PM2.5"
+  ) +
+  theme_minimal(base_size = 14)
+  print(p)
+}
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+CinC_clean %>%
+  dplyr::count(Date, device_number) %>%
+  dplyr::filter(n > 1)
+
+CinC_wide <- CinC_clean %>%
+  group_by(Date, device_number) %>%
+  summarise(PM25 = mean(PM25, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = device_number, values_from = PM25)
+
+library(GGally)
+library(ggplot2)
+
+# Set axis limits
+plot_limits <- c(0, 40)
+
+# Custom function for upper panels with regression + R²
+upper_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.5, color = "orange") +
+    geom_smooth(method = "lm", se = FALSE, color = "brown") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+    stat_cor(aes(label = paste0("R² = ", ..rr.label..)), size = 3, label.x.npc = "left") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Custom function for lower panels (just scatter + identity)
+lower_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.5, color = "orange") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Diagonal: histogram or density
+diag_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_density(fill = "lightblue", alpha = 0.7) +
+    scale_x_continuous(limits = plot_limits)
+}
+
+# Now plot
+ggpairs(
+  data = CinC_wide[, -1],  # remove Date
+  upper = list(continuous = wrap(upper_fn)),
+  lower = list(continuous = wrap(lower_fn)),
+  diag = list(continuous = wrap(diag_fn))
+)
+
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(GGally)
+library(ggplot2)
+
+# Step 1: Average duplicate daily readings per device
+CinC_avg <- CinC_clean %>%
+  group_by(Date, device_number) %>%
+  summarise(PM25 = mean(PM25, na.rm = TRUE), .groups = "drop")
+
+# Step 2: Pivot wider
+CinC_wide <- CinC_avg %>%
+  pivot_wider(names_from = device_number, values_from = PM25)
+
+# Step 3: Drop any non-numeric columns (keep only numeric for ggpairs)
+CinC_matrix <- CinC_wide %>% select(where(is.numeric))
+
+library(dplyr)
+
+# 1. Remove columns with too many NAs
+CinC_matrix_clean <- CinC_matrix %>%
+  select(where(~ mean(!is.na(.)) > 0.7))  # keeps only columns with >70% non-NA
+
+# 2. Rename columns to valid variable names (e.g., Device_3, Device_8)
+names(CinC_matrix_clean) <- paste0("Device_", names(CinC_matrix_clean))
+
+# Set axis limits
+plot_limits <- c(0, 40)
+
+# Upper function: regression + smooth + identity line
+upper_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.6, color = "darkblue") +
+    geom_smooth(method = "lm", se = FALSE, color = "firebrick") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray40") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Lower function: just scatter
+lower_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.6, color = "darkgreen") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray40") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Diagonal: density
+diag_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_density(fill = "lightblue", alpha = 0.7) +
+    scale_x_continuous(limits = plot_limits)
+}
+
+# Clean CinC_matrix to make sure only numeric columns are used
+CinC_matrix <- CinC_matrix %>% select(where(is.numeric))
+
+# Check for any column with all NAs (remove them)
+CinC_matrix <- CinC_matrix %>%
+  select(where(~ !all(is.na(.))))
+
+# Plot!
+ggpairs(
+  data = CinC_matrix_clean,
+  upper = list(continuous = wrap(upper_fn)),
+  lower = list(continuous = wrap(lower_fn)),
+  diag = list(continuous = wrap(diag_fn))
+)
+
+library(gridExtra)
+
+grid_plot <- grid.arrange(grobs = plot_matrix, 
+                          ncol = n_sites, 
+                          nrow = n_sites)
+print(grid_plot)
+```
+
+
+
+### Load CLEANinCLE dataset and filter to only PM2.5.
+
+```{r}
+ # Load necessary libraries
+library(readr)
+library(dplyr)
+
+# Step 1a: Load CinC dataset
+cleanincle_data <- read_csv("~/Documents/R_Projects/Air_pollution_Projects/CLEANinCLE_Raw_Air_Quality_Data_2024-11-2025-05.csv")
+
+# Step 1b: Filter only PM2.5 observations
+CinC_pm2.5 <- cleanincle_data %>%
+  filter(measure_name == "mc_pm2_5")
+
+```
+
+
+## Clean and rename columns
+```{r}
+# Load lubridate for date handling
+library(lubridate)
+
+# Clean and simplify the dataset
+CinC_clean <- CinC_pm2.5 %>%
+  mutate(
+    Timestamp = time,          # Keep the original timestamp
+    Date = as.Date(time),     # Extract date only
+    PM2.5 = value              # Rename for clarity
+  ) %>%
+  select(Date, Timestamp, device_number, PM2.5, latitude, longitude, device_eui, location_name)
+
+# Preview the cleaned data
+head(CinC_clean)
+
+```
+
+
+## Unique CinC Device Locations
+Creating this early on helps to:
+	•	Know how many distinct sensors you have.
+	•	Match CinC sensors to EPA sites by distance.
+	•	Catch duplicate locations or errors in coordinates early.
+```{r}
+# Step: Create unique table of CinC device locations
+CinC_clean <- CinC_clean %>%
+  mutate(device_number = case_when(
+    device_number == 17 & latitude == 41.49212 & longitude == -81.67856 ~ "17a",
+    device_number == 17 & latitude == 41.47473 & longitude == -81.72846 ~ "17b",
+    TRUE ~ as.character(device_number)
+  ))
+
+# Step: Create unique table of CinC device locations
+CinC_locations <- CinC_clean %>%
+  select(device_number, device_eui, location_name, latitude, longitude) %>%
+  distinct() %>%
+  arrange(device_number)
+
+# Preview the table
+print(CinC_locations)
+```
+
+##  Create Daily Average PM2.5 per Device
+```{r}
+# Create daily average PM2.5 per device
+CinC_daily_avg <- CinC_clean %>%
+  group_by(Date, device_number) %>%
+  summarise(pm2.5_CinC = mean(PM2.5, na.rm = TRUE), .groups = "drop")
+
+# Preview the result
+head(CinC_daily_avg)
+
+```
+
+# Pivot Daily Averages to Wide Format
+
+This create pairwise comparisons between devices — each column becomes a CinC device.
+This gives you a table where each column is a device and each row is a date, making it ready for correlation and plotting.
+```{r}
+
+# Step 5: Pivot CinC daily averages to wide format
+CinC_wide <- CinC_daily_avg %>%
+  pivot_wider(names_from = device_number, values_from = pm2.5_CinC)
+
+# Preview the wide-format table
+head(CinC_wide)
+```
+
+## Create Matrix of Pairwise Comparisons (R² and Identity Lines)
+
+This step helps visually and statistically assess how similar the PM2.5 readings are across the different CLEANinCLE sensors.
+```{r}
+# Load necessary libraries
+library(GGally)
+library(ggplot2)
+
+# Optional: restrict axis range for cleaner comparisons
+plot_limits <- c(0, 40)
+
+# Custom function for upper panels: scatter + regression + identity + R²
+upper_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.5, color = "orange") +
+    geom_smooth(method = "lm", se = FALSE, color = "brown") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Lower: only scatter + identity
+lower_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.5, color = "orange") +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+    coord_fixed() +
+    scale_x_continuous(limits = plot_limits) +
+    scale_y_continuous(limits = plot_limits)
+}
+
+# Diagonal: density
+diag_fn <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) +
+    geom_density(fill = "lightblue", alpha = 0.7) +
+    scale_x_continuous(limits = plot_limits)
+}
+
+# Generate the plot (exclude date column if present)
+CinC_matrix_plot <- ggpairs(
+  data = CinC_wide[ , -1],  # Remove Date column
+  upper = list(continuous = wrap(upper_fn)),
+  lower = list(continuous = wrap(lower_fn)),
+  diag = list(continuous = wrap(diag_fn))
+)
+
+```
+
+
+## Create a Function to Compute Pairwise R²
+```{r}
+# Compute pairwise R² between device columns
+calculate_r2_matrix <- function(data) {
+  device_names <- names(data)
+  r2_matrix <- matrix(NA, nrow = length(device_names), ncol = length(device_names),
+                      dimnames = list(device_names, device_names))
+  
+  for (i in seq_along(device_names)) {
+    for (j in seq_along(device_names)) {
+      x <- data[[i]]
+      y <- data[[j]]
+      complete_cases <- complete.cases(x, y)
+      if (sum(complete_cases) > 1) {
+        r2_matrix[i, j] <- summary(lm(y[complete_cases] ~ x[complete_cases]))$r.squared
+      }
+    }
+  }
+  
+  return(as.data.frame(as.table(r2_matrix)))
+}
+
+```
+
+
+## Compute Distances Between Sensor Pairs
+```{r}
+# Load library
+library(geosphere)
+
+# Make sure device_number is character in location table
+CinC_locations <- CinC_locations %>%
+  mutate(device_number = as.character(device_number))
+
+# Create all unique pairs
+location_pairs <- expand.grid(device_number_1 = CinC_locations$device_number,
+                              device_number_2 = CinC_locations$device_number,
+                              stringsAsFactors = FALSE)
+
+# Join lat/lon for both devices
+location_pairs <- location_pairs %>%
+  left_join(CinC_locations, by = c("device_number_1" = "device_number")) %>%
+  rename(lat1 = latitude, lon1 = longitude) %>%
+  left_join(CinC_locations, by = c("device_number_2" = "device_number")) %>%
+  rename(lat2 = latitude, lon2 = longitude)
+
+# Calculate distance (in meters) using Haversine formula
+location_pairs <- location_pairs %>%
+  mutate(distance_m = distHaversine(cbind(lon1, lat1), cbind(lon2, lat2)))
+
+# Compute R² matrix
+r2_values <- calculate_r2_matrix(CinC_wide[ , -1])  # exclude Date column
+colnames(r2_values) <- c("device_number_1", "device_number_2", "r2")
+
+# Join R² with distances
+r2_distance_df <- left_join(location_pairs, r2_values, by = c("device_number_1", "device_number_2"))
+
+# Keep only unique non-self comparisons
+r2_distance_clean <- r2_distance_df %>%
+  filter(device_number_1 != device_number_2) %>%
+  distinct(device_number_1, device_number_2, .keep_all = TRUE)
+
+# Preview
+head(r2_distance_clean)
+
+```
+
+## Plot R² vs Distance
+
+This plot will help you see whether sensor pairs that are closer together tend to have stronger agreement (higher R²).
+Each point represents a pair of devices, and the R² measures how similarly they track daily PM2.5 concentrations.
+```{r}
+library(ggplot2)
+library(ggpmisc)
+
+ggplot(r2_distance_df, aes(x = distance_m / 1000, y = r2)) +
+  geom_point(alpha = 0.6, color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "gray30", linetype = "dashed", size = 0.8) +
+  stat_poly_eq(aes(label = paste(..rr.label.., sep = "~~~")),
+               formula = y ~ x,
+               parse = TRUE,
+               label.x = "right",
+               label.y = 0.95,
+               size = 5,
+               color = "black") +
+  labs(
+    title = "Relationship Between Sensor Distance and R² 
+                             (CinC PM2.5)",
+    x = "Distance Between Devices (km)",
+    y = expression(R^2 * " of Daily PM2.5")
+  ) +
+  xlim(0, 25) +
+  ylim(0, 1) +
+  theme_minimal(base_size = 16)
+
+```
+
+Interpretation:
+
+	•	As the distance between sensors increases, the R² tends to decrease slightly.
+	•	This means that closer sensors generally show more similar PM2.5 readings on a day-to-day basis.
+	•	The overall fit of the linear trend is quite weak (only 10% of the variance in R² is explained by distance).
+	•	This implies distance is not the only factor — other influences like local emission sources, wind patterns, or sensor quality may also impact agreement between sites.
+	•	There’s a wide range of R² values even among sensors that are close together.
+	•	This suggests some close sensors still measure differently, perhaps due to micro-environmental effects.
+
+## Identify Sensor Pairs with High Agreement at Long Distances
+This helps you find interesting (and possibly surprising) sensor pairs that:
+	•	Are far apart (e.g. > 5 km), but
+	•	Still have a high R² (e.g. > 0.75)
+	
+These could suggest:
+	•	Regional PM2.5 trends
+	•	Redundant sensors (for network optimization)
+	•	Strong long-range transport patterns
+
+```{r}
+# Sensor pairs with high R² despite long distance
+high_agreement_long_distance <- r2_distance_df %>%
+  filter(distance_m > 5000, r2 > 0.75) %>%
+  arrange(desc(r2))
+
+high_agreement_long_distance <- r2_distance_df %>%
+  filter(distance_m > 5000, r2 > 0.75) %>%
+  arrange(desc(r2))
+
+high_agreement_long_distance_named <- high_agreement_long_distance %>%
+  left_join(CinC_locations, by = c("device_number_1" = "device_number")) %>%
+  rename(location_1 = location_name) %>%
+  left_join(CinC_locations, by = c("device_number_2" = "device_number")) %>%
+  rename(location_2 = location_name)
+
+print(high_agreement_long_distance_named)
+
+# View the result
+print(high_agreement_long_distance)
+
+
+
+```
+
+##
+
+```{r}
+# View close but low-correlated sensor pairs
+low_agreement_close_distance %>%
+  select(device_number_1, location_name.x, 
+         device_number_2, location_name.y, 
+         distance_m, r2) %>%
+  arrange(r2) %>%
+  View()
+```
+
+
+# CLEANinCLE–EPA sensor pairs with their distances
+```{r}
+# Load required packages
+library(dplyr)
+library(geosphere)
+
+# ---- Input: CinC and EPA location tables ----
+# CinC_locations: your unique CinC sensor locations table
+# EPA_locations: a data frame like below
+
+# Example EPA_locations table (edit/replace this with your actual data if available)
+EPA_locations <- data.frame(
+  site_name = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  lat = c(41.4896, 41.5796, 41.4941, 41.4954, 41.5054, 41.4769),
+  lon = c(-81.7118, -81.5661, -81.7098, -81.6303, -81.6679, -81.6824)
+)
+
+# ---- Calculate all CinC–EPA distance pairs ----
+cinc_epa_distances <- expand.grid(
+  device_number = CinC_locations$device_number,
+  site_name = EPA_locations$site_name,
+  stringsAsFactors = FALSE
+) %>%
+  left_join(CinC_locations, by = "device_number") %>%
+  left_join(EPA_locations, by = "site_name") %>%
+  rowwise() %>%
+  mutate(
+    distance_km = distHaversine(c(lon, lat), c(longitude, latitude)) / 1000  # km
+  ) %>%
+  ungroup() %>%
+  select(device_number, location_name, site_name, distance_km) %>%
+  arrange(distance_km)
+
+# ---- View table ----
+head(cinc_epa_distances)
+
+```
+
+# Plot R² vs. Distance (CinC vs EPA)
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(geosphere)
+
+# STEP 1: Create a table of EPA sites with known coordinates
+epa_sites <- tibble::tibble(
+  epa_site_number = c("0034", "0038", "0045", "0060", "0065", "0073"),
+  epa_site_name = c("Site A", "Site B", "Site C", "Site D", "Site E", "Site F"),
+  lat_epa = c(41.476985, 41.49409, 41.47473, 41.46274, 41.50541, 41.49212),
+  lon_epa = c(-81.682376, -81.70976, -81.72846, -81.65997, -81.66791, -81.67856)
+)
+
+# STEP 2: Create a new table of distances between each EPA site and all CinC devices
+epa_to_cinc <- epa_sites %>%
+  rowwise() %>%
+  mutate(nearest = list({
+    # For each EPA site, compute distance to each CinC location
+    distances <- geosphere::distHaversine(
+      matrix(c(lon_epa, lat_epa), ncol = 2),
+      matrix(c(CinC_locations$longitude, CinC_locations$latitude), ncol = 2)
+    )
+    
+    # Find index of the closest CinC device
+    closest_index <- which.min(distances)
+    
+    # Extract the closest CinC device info
+    CinC_locations[closest_index, ] %>%
+      mutate(distance_m = distances[closest_index])
+  })) %>%
+  tidyr::unnest(cols = c(nearest))
+
+# STEP 3: View the result
+print(epa_to_cinc)
+```
+
+
+
+```{r}
+# Packages
+library(dplyr)
+library(tidyr)
+library(geosphere)
+library(readr)
+
+#---- inputs assumed ----
+# epa_sites: columns = epa_site_number, epa_site_name, lat_epa, lon_epa
+# CinC_locations: columns = device_number (chr), device_eui, location_name, latitude, longitude
+
+# 1) All pairwise distances (meters)
+epa_cinc_pairs <- tidyr::expand_grid(
+  epa_sites %>% select(epa_site_number, epa_site_name, lat_epa, lon_epa),
+  CinC_locations %>% rename(lat_cinc = latitude, lon_cinc = longitude)
+) %>%
+  mutate(
+    distance_m = geosphere::distHaversine(
+      cbind(lon_epa, lat_epa),
+      cbind(lon_cinc, lat_cinc)
+    ),
+    distance_km = distance_m / 1000
+  )
+
+# 2) Nearest CinC device per EPA site (one row per EPA site)
+nearest_cinc_per_epa <- epa_cinc_pairs %>%
+  group_by(epa_site_number, epa_site_name) %>%
+  slice_min(distance_m, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(
+    epa_site_number, epa_site_name, lat_epa, lon_epa,
+    device_number, device_eui, location_name, lat_cinc, lon_cinc,
+    distance_m, distance_km
+  ) %>%
+  arrange(epa_site_number)
+
+# 4) Inspect
+print(nearest_cinc_per_epa)
+print(top3_cinc_per_epa)
+
+# 5) Save (optional)
+write_csv(nearest_cinc_per_epa, "epa_to_nearest_cinc.csv")
+write_csv(top3_cinc_per_epa, "epa_to_top3_cinc.csv")
+
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+library(stringr)
+
+epa_path <- "~/Documents/R_Projects/Air_pollution_Projects/epa_pm25_site_combined.csv"
+epa_in   <- read_csv(epa_path, show_col_types = FALSE)
+
+# Standardize names to lowercase for safety
+names(epa_in) <- tolower(names(epa_in))
+
+# Build EPA daily table
+epa_daily_avg <- epa_in %>%
+  transmute(
+    date     = as.Date(date_local),                # YYYY-MM-DD -> Date
+    epa_site = str_pad(as.character(site_number),  # 38 -> "0038"
+                       width = 4, pad = "0"),
+    pm25_epa = as.numeric(sample_measurement)
+  ) %>%
+  filter(!is.na(date), !is.na(epa_site), !is.na(pm25_epa)) %>%
+  group_by(date, epa_site) %>%
+  summarise(pm25_epa = mean(pm25_epa, na.rm = TRUE), .groups = "drop")
+
+# Quick check
+message("# rows in epa_daily_avg: ", nrow(epa_daily_avg))
+print(head(epa_daily_avg, 10))
+```
+
+```{r}
+library(dplyr)
+library(stringr)
+
+# Make sure device_number is the same type everywhere (use character)
+cinc_daily_avg <- cinc_daily_avg %>%
+  mutate(device_number = as.character(device_number))
+
+epa_to_cinc_norm <- epa_to_cinc %>%
+  mutate(
+    epa_site   = str_pad(as.character(epa_site_number), width = 4, pad = "0"),
+    device_number = as.character(device_number)
+  )
+
+# Merge EPA daily with nearest CinC device/day
+epa_cinc_merged <- epa_to_cinc_norm %>%
+  left_join(epa_daily_avg, by = "epa_site") %>%              # adds date, pm25_epa
+  left_join(cinc_daily_avg, by = c("date", "device_number")) %>%  # adds pm25_cinc
+  filter(!is.na(pm25_epa), !is.na(pm25_cinc))
+
+# Quick checks
+nrow(epa_cinc_merged)
+glimpse(epa_cinc_merged)
+head(epa_cinc_merged)
+
+```
+
+```{r}
+library(dplyr)
+
+# Basic checks
+count_by_site_date <- epa_cinc_merged %>%
+  count(epa_site, date, name = "n_per_day")
+
+summary(count_by_site_date$n_per_day)  # should mostly be 1
+
+# Drop impossible/negative values if any slipped in
+epa_cinc_merged <- epa_cinc_merged %>%
+  filter(pm25_epa >= 0, pm25_cinc >= 0)
+
+
+library(broom)
+
+site_summary <- epa_cinc_merged %>%
+  group_by(epa_site) %>%
+  reframe(
+    n = n(),
+    model = list(lm(pm25_cinc ~ pm25_epa)),
+    tidied = list(tidy(model[[1]])),
+    glanced = list(glance(model[[1]]))
+  ) %>%
+  mutate(
+    slope     = tidied[[1]]$estimate[tidied[[1]]$term == "pm25_epa"],
+    intercept = tidied[[1]]$estimate[tidied[[1]]$term == "(Intercept)"],
+    r2        = glanced[[1]]$r.squared
+  ) %>%
+  select(epa_site, n, slope, intercept, r2) %>%
+  arrange(desc(r2))
+
+# Peek
+print(site_summary, n = 20)
+
+
+# Option A: set a manual common limit (edit if you like)
+xy_lim <- c(0, max(epa_cinc_merged$pm25_epa, epa_cinc_merged$pm25_cinc, na.rm = TRUE))
+xy_lim[2] <- ceiling(xy_lim[2] / 5) * 5  # round up to nearest 5
+
+# Option B: if you prefer to clip extremes (e.g., 0–40 µg/m³)
+# xy_lim <- c(0, 40)
+```
+
+```{r}
+library(ggplot2)
+
+# Join R² to data for labeling in each facet
+plot_data <- epa_cinc_merged %>%
+  left_join(site_summary %>% select(epa_site, r2), by = "epa_site") %>%
+  mutate(r2_label = paste0("R² = ", sprintf("%.2f", r2)))
+
+p_facets <- ggplot(plot_data, aes(x = pm25_epa, y = pm25_cinc)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue", linewidth = 1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray40") +
+  # print the R² on each panel in the upper left
+  annotate("text", x = xy_lim[1] + diff(xy_lim)*0.03, y = xy_lim[2] - diff(xy_lim)*0.06,
+           label = unique(plot_data[, c("epa_site","r2_label")])[match(plot_data$epa_site, 
+                    unique(plot_data$epa_site)), "r2_label", drop = TRUE],
+           hjust = 0, vjust = 1, size = 3, color = "black", check_overlap = TRUE) +
+  coord_equal(xlim = xy_lim, ylim = xy_lim, expand = FALSE) +
+  facet_wrap(~ epa_site, ncol = 3) +
+  labs(
+    title = "CinC vs EPA Daily PM2.5 by EPA Site",
+    x = "EPA PM2.5 (µg/m³)",
+    y = "CinC PM2.5 (µg/m³)"
+  ) +
+  theme_minimal(base_size = 13)
+
+p_facets
+```
+
+```{r}
+label_pos <- plot_data %>%
+  group_by(epa_site, r2_label) %>%
+  summarise(x = xy_lim[1] + diff(xy_lim)*0.03,
+            y = xy_lim[2] - diff(xy_lim)*0.06,
+            .groups = "drop")
+
+p_facets <- ggplot(plot_data, aes(pm25_epa, pm25_cinc)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "steelblue", linewidth = 1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray40") +
+  geom_text(data = label_pos, aes(x = x, y = y, label = r2_label),
+            inherit.aes = FALSE, hjust = 0, vjust = 1, size = 3) +
+  coord_equal(xlim = xy_lim, ylim = xy_lim, expand = FALSE) +
+  facet_wrap(~ epa_site, ncol = 3) +
+  labs(title = "CinC vs EPA Daily PM2.5 by EPA Site",
+       x = "EPA PM2.5 (µg/m³)", y = "CinC PM2.5 (µg/m³)") +
+  theme_minimal(base_size = 13)
+
+p_facets
+
+
+
+```
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

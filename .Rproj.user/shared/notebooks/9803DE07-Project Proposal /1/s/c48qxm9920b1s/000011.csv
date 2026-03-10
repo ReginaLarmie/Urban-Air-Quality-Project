@@ -1,0 +1,50 @@
+"0","map(epa_site_data, colnames)"
+"1","$`0034`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+$`0038`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+$`0045`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+$`0060`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+$`0065`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+$`0073`
+ [1] ""state_code""            ""county_code""           ""site_number""           ""parameter_code""        ""poc""                  
+ [6] ""latitude""              ""longitude""             ""datum""                 ""parameter""             ""date_local""           
+[11] ""time_local""            ""date_gmt""              ""time_gmt""              ""sample_measurement""    ""units_of_measure""     
+[16] ""units_of_measure_code"" ""sample_duration""       ""sample_duration_code""  ""sample_frequency""      ""detection_limit""      
+[21] ""uncertainty""           ""qualifier""             ""method_type""           ""method""                ""method_code""          
+[26] ""state""                 ""county""                ""date_of_last_change""   ""cbsa_code""            
+
+"

@@ -1,0 +1,5 @@
+"0",""
+"0","lowest_dev24 <- cinc_dev24 %>%"
+"0","  slice_min(value, n = 1, with_ties = FALSE)"
+"0",""
+"0","lowest_dev24"

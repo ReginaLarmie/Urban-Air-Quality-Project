@@ -1,0 +1,4 @@
+"1","TableGrob (6 x 6) ""arrange"": 36 grobs
+"
+"0","# Step 5: Also save to a high-quality PDF"
+"0","ggsave(""EPA_Filter_PM25_5x5_Comparison.pdf"", plot = grid_plot, width = 22, height = 22)"

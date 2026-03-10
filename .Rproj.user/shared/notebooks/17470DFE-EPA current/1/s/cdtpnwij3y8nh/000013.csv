@@ -1,0 +1,5 @@
+"0",""
+"0","# Daily averages from the 1-hour data"
+"0","df_0045_1hr_avg <- df_0045_1hr %>%"
+"0","  group_by(date_local) %>%"
+"0","  summarise(PM25_0045H = mean(PM25_0045H, na.rm = TRUE), .groups = ""drop"")"

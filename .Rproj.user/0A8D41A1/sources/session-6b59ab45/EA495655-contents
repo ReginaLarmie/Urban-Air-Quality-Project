@@ -1,0 +1,228 @@
+---
+title: "Untitled"
+author: "CLEANINCLE API"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+usethis::edit_r_environ()
+CLEANINCLE_API_KEY=2KYc26u6sn6bPAaZHJx5R3DSzQL8Y6sV38hy0c3t
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+Sys.getenv("CLEANINCLE_API_KEY")
+"2KYc26u6sn6bPAaZHJx5R3DSzQL8Y6sV38hy0c3t"
+
+api_key <- Sys.getenv("CLEANINCLE_API_KEY")
+```
+```{r}
+library(httr2)
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# 1. Configuration and Authentication
+api_url <- "https://data.cleanincle.issacs.dev"
+api_key <- "2KYc26u6sn6bPAaZHJx5R3DSzQL8Y6sV38hy0c3t"
+
+# Define query parameters for the time range
+params <- list(
+  start_date = "2025-06-01T00:00:00+04:00",
+  end_date   = "2025-06-01T01:00:00+04:00"
+)
+
+# 2. Data Acquisition Loop
+all_records <- list()
+current_params <- params
+
+message("Starting data download from API...")
+
+repeat {
+  # Build and execute the request
+  resp <- request(api_url) |>
+    req_headers(`x-api-key` = api_key) |>
+    req_url_query(!!!current_params) |>
+    req_retry(max_tries = 3) |> # Retry in case of network instability
+    req_perform()
+ 
+  # Parse JSON response body
+  body <- resp_body_json(resp)
+ 
+  # Accumulate records into the list
+  all_records <- c(all_records, body$records)
+ 
+  # Check for pagination: break if no 'next_token' is provided
+  if (is.null(body$next_token)) break
+ 
+  # Update the token for the next iteration
+  current_params$next_token <- body$next_token
+}
+
+# 3. Data Processing and Export
+if (length(all_records) > 0) {
+  # Convert the list of records into a primary dataframe
+  df <- bind_rows(all_records)
+ 
+  # Flatten nested list columns (e.g., pm_2.5, co2_ppm) into individual value columns
+  # This is necessary because CSV files cannot store list-type columns
+  df_final <- df %>%
+    unnest_wider(where(is.list), names_sep = "_")
+ 
+  # Export the cleaned dataframe to a CSV file
+  write_csv(df_final, "cle_air_quality.csv")
+ 
+  message("uccess! Downloaded ", nrow(df_final), " records.")
+  message("File saved as: 'cle_air_quality.csv'")
+ 
+  # Preview the first few rows of the final data
+  print(head(df_final))
+ 
+} else {
+  message("No records found for the specified time range.")
+}
+
+```
+
+```{r}
+library(httr2)
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# 1. Configuration and Authentication
+api_url <- "https://data.cleanincle.issacs.dev"
+api_key <- "2KYc26u6sn6bPAaZHJx5R3DSzQL8Y6sV38hy0c3t"
+
+# Define query parameters for the time range
+params <- list(
+  start_date = "2024-11-01T00:00:00Z",
+  end_date   = "2026-01-01T00:00:00Z"
+)
+
+# 2. Data Acquisition Loop
+all_records <- list()
+current_params <- params
+
+message("Starting data download from API...")
+
+repeat {
+  resp <- request(api_url) |>
+    req_headers(`x-api-key` = api_key) |>
+    req_url_query(!!!current_params) |>
+    req_retry(max_tries = 3) |>
+    req_perform()
+
+  body <- resp_body_json(resp)
+
+  all_records <- c(all_records, body$records)
+
+  if (is.null(body$next_token)) break
+
+  current_params$next_token <- body$next_token
+}
+
+# 3. Data Processing and Export
+if (length(all_records) > 0) {
+  df <- bind_rows(all_records)
+
+  df_final <- df %>%
+    unnest_wider(where(is.list), names_sep = "_")
+
+  write_csv(df_final, "cle_air_quality_2024-11_to_2025-12.csv")
+
+  message("Success! Downloaded ", nrow(df_final), " records.")
+  message("File saved as: 'cle_air_quality_2024-11_to_2025-12.csv'")
+
+  print(head(df_final))
+
+} else {
+  message("No records found for the specified time range.")
+}
+
+```
+
+
+```{r}
+dim(df_final)
+names(df_final)
+head(df_final)
+tail(df_final)
+```
+
+```{r}
+saveRDS(df_final, "cle_air_quality_2024-11_to_2025-12.rds")
+
+df_final %>%
+  group_by(device_number, location_name) %>%
+  summarise(
+    n = n(),
+    start_time = min(time, na.rm = TRUE),
+    end_time = max(time, na.rm = TRUE),
+    pm25_missing = sum(is.na(`pm_2.5`)),
+    .groups = "drop"
+  ) %>%
+  arrange(device_number)
+```
+
+# EPA
+```{r}
+library(httr2)
+library(jsonlite)
+library(dplyr)
+library(purrr)
+library(readr)
+library(tibble)
+
+site_numbers <- c("0034", "0038", "0045", "0060", "0065", "0073")
+
+fetch_epa_daily <- function(site) {
+  resp <- request("https://aqs.epa.gov/data/api/dailyData/bySite") |>
+    req_url_query(
+      email  = "rnl34@case.edu",
+      key    = "copperhawk19",
+      param  = "88101",
+      bdate  = "20241101",
+      edate  = "20251231",
+      state  = "39",
+      county = "035",
+      site   = site
+    ) |>
+    req_perform()
+
+  body <- jsonlite::fromJSON(resp_body_string(resp), flatten = TRUE)
+
+  if (!"Data" %in% names(body) || is.null(body$Data)) {
+    return(tibble())
+  }
+
+  tibble::as_tibble(body$Data) %>%
+    mutate(site_number_requested = site)
+}
+
+epa_daily_list <- purrr::map(site_numbers, fetch_epa_daily)
+epa_daily <- bind_rows(epa_daily_list)
+
+write_csv(epa_daily, "epa_pm25_daily_2024-11_to_2025-12.csv")
+
+dim(epa_daily)
+names(epa_daily)
+head(epa_daily)
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

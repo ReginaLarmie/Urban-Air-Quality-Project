@@ -1,0 +1,8 @@
+"0","files <- list.files(""ASOS_1min_2024_raw"", full.names = TRUE)"
+"0",""
+"0","sizes_mb <- round(file.info(files)$size / 1024^2, 2)"
+"0",""
+"0","data.frame("
+"0","  file = basename(files),"
+"0","  size_MB = sizes_mb"
+"0",")"

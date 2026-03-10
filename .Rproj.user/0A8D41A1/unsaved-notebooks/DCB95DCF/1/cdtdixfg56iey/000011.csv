@@ -1,0 +1,7 @@
+"0","# 6) (Optional) A quick summary table to see exactly which device(s) appear per Site and how many points"
+"0","device_summary <- df %>%"
+"0","  count(Site, device_label, name = ""n_points"") %>%"
+"0","  arrange(Site, desc(n_points))"
+"0",""
+"0","readr::write_csv(device_summary, ""tables/which_devices_used_per_site_cont.csv"")"
+"0","head(device_summary)"

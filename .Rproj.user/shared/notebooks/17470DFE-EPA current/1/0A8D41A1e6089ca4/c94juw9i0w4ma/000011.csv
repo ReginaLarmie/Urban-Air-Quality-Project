@@ -1,0 +1,7 @@
+"0",""
+"0","# Step 5: Pivot CinC daily averages to wide format"
+"0","CinC_wide <- CinC_daily_avg %>%"
+"0","  pivot_wider(names_from = device_number, values_from = pm2.5_CinC)"
+"0",""
+"0","# Preview the wide-format table"
+"0","head(CinC_wide)"

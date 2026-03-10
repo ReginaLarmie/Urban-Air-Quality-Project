@@ -1,0 +1,4 @@
+"0","# FEM (hourly aggregated to daily)"
+"0","plot_matrix_pairs(epa_hourly_wide, axis_max = 30,"
+"0","                  file_out = ""figs/fig_epa_hourly_matrix.png"","
+"0","                  title = ""EPA Hourly→Daily PM2.5: Site-to-Site Pairwise Comparisons"")"

@@ -1,0 +1,42 @@
+"0",""
+"0","# Combine all EPA site data into one tibble"
+"0","epa_all_data <- bind_rows(epa_data_list, .id = ""site_number"")"
+"0",""
+"0","# Count NA values in each column"
+"0","na_counts <- sapply(epa_all_data, function(col) sum(is.na(col)))"
+"0","na_counts <- sort(na_counts, decreasing = TRUE)"
+"0",""
+"0","# Display NA counts per column"
+"0","na_counts"
+"1","          uncertainty             qualifier    sample_measurement            state_code           county_code 
+                26648                 26433                   214                     0                     0 
+          site_number        parameter_code                   poc              latitude             longitude 
+                    0                     0                     0                     0                     0 
+                datum             parameter            date_local            time_local              date_gmt 
+                    0                     0                     0                     0                     0 
+             time_gmt      units_of_measure units_of_measure_code       sample_duration  sample_duration_code 
+                    0                     0                     0                     0                     0 
+     sample_frequency       detection_limit           method_type                method           method_code 
+                    0                     0                     0                     0                     0 
+                state                county   date_of_last_change             cbsa_code 
+                    0                     0                     0                     0 
+"
+"0","# Identify columns with mostly missing values"
+"0","total_rows <- nrow(epa_all_data)"
+"0",""
+"0","# Columns where fewer than 5% of rows are NOT NA"
+"0","mostly_na_cols <- names(na_counts[na_counts > 0 & na_counts < total_rows * 0.05])"
+"0",""
+"0","# Summary of columns with mostly missing values"
+"0","epa_all_data %>%"
+"0","  select(all_of(mostly_na_cols)) %>%"
+"0","  summary()"
+"1"," sample_measurement
+ Min.   : 0.200    
+ 1st Qu.: 4.000    
+ Median : 6.300    
+ Mean   : 7.495    
+ 3rd Qu.: 9.700    
+ Max.   :54.100    
+ NA's   :214       
+"

@@ -1,0 +1,8 @@
+"0","# Combine all 24-hour filter data"
+"0","df_combined_24hr <- all_dates %>%"
+"0","  left_join(df_0034_24hr, by = ""date_local"") %>%"
+"0","  left_join(df_0038_24hr, by = ""date_local"") %>%"
+"0","  left_join(df_0045_24hr, by = ""date_local"") %>%"
+"0","  left_join(df_0060_24hr, by = ""date_local"") %>%"
+"0","  left_join(df_0065_24hr, by = ""date_local"") %>%"
+"0","  left_join(df_0073_24hr, by = ""date_local"")"

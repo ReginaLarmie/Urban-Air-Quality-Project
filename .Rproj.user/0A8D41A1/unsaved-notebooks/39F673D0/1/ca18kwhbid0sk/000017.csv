@@ -1,0 +1,2 @@
+"0",""
+"0","write_csv(met_2024, file.path(out_dir, ""KCLE_2024_30min_ALL.csv""))"

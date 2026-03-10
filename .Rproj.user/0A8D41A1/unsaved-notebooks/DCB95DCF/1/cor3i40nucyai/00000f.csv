@@ -1,0 +1,54 @@
+"0","# 2. Load EPA data (all sites)"
+"0",""
+"0","> We’ll read each EPA CSV, tag it with the site id, and keep only columns we need."
+"2","G1;H1;Errorh: unexpected '>' in "">""
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","```r"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","```{r epa-load}"
+"2","G1;H1;Errorh: attempt to use zero-length variable name
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","# List of EPA site IDs you have files for (update if needed)"
+"0","epa_sites <- c(""0034"",""0038"",""0045"",""0060"",""0065"",""0073"")"
+"0",""
+"0","# Helper to read one site file (expects files like: epa_pm25_site_0034.csv)"
+"0","read_epa_site <- function(site_id){"
+"0","  f <- sprintf(""epa_pm25_site_%s.csv"", site_id)"
+"0","  stopifnot(file.exists(f))"
+"0","  read_csv(f, show_col_types = FALSE) %>%"
+"0","    mutate(site_number = site_id)"
+"0","}"
+"0",""
+"0","epa_all <- map_dfr(epa_sites, read_epa_site)"
+"0",""
+"0","# Keep the essentials and standardize names"
+"0","epa_all <- epa_all %>%"
+"0","  transmute("
+"0","    Site         = site_number,"
+"0","    DateTime     = ymd_hms(date_local, quiet = TRUE),  # if already date, it still works"
+"0","    Date         = as.Date(date_local),"
+"0","    SampleDur    = sample_duration,"
+"0","    PM25         = sample_measurement,"
+"0","    Latitude     = latitude,"
+"0","    Longitude    = longitude"
+"0","  )"
+"0",""
+"0","glimpse(epa_all)"
+"1","Rows: 26,648
+Columns: 7
+"
+"1","$ Site      [3m[38;5;246m<chr>[39m[23m ""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034""[38;5;246m, [39m""0034…
+$ DateTime  [3m[38;5;246m<dttm>[39m[23m [31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m[31mNA[39m[38;5;246m, [39m…
+$ Date      [3m[38;5;246m<date>[39m[23m 2024-11-02[38;5;246m, [39m2024-11-05[38;5;246m, [39m2024-11-08[38;5;246m, [39m2024-11-11[38;5;246m, [39m2024-11-14[38;5;246m, [39m2024-11-17[38;5;246m, [39m2024-11-20[38;5;246m, [39m2024-11-…
+$ SampleDur [3m[38;5;246m<chr>[39m[23m ""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 HOUR""[38;5;246m, [39m""24 H…
+$ PM25      [3m[38;5;246m<dbl>[39m[23m 2.9[38;5;246m, [39m5.6[38;5;246m, [39m5.2[38;5;246m, [39m2.8[38;5;246m, [39m2.6[38;5;246m, [39m5.8[38;5;246m, [39m3.3[38;5;246m, [39m1.4[38;5;246m, [39m4.0[38;5;246m, [39m6.3[38;5;246m, [39m7.9[38;5;246m, [39m1.7[38;5;246m, [39m7.3[38;5;246m, [39m7.0[38;5;246m, [39m9.3[38;5;246m, [39m8.3[38;5;246m, [39m7.4[38;5;246m, [39m6.4[38;5;246m, [39m6.8…
+$ Latitude  [3m[38;5;246m<dbl>[39m[23m 41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.55523[38;5;246m, [39m41.…
+$ Longitude [3m[38;5;246m<dbl>[39m[23m -81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.57526[38;5;246m, [39m-81.5…
+"

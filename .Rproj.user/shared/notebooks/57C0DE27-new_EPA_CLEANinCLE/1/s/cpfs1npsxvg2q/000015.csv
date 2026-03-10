@@ -1,0 +1,76 @@
+"0","library(readr)"
+"0","library(dplyr)"
+"0","library(lubridate)"
+"0",""
+"0","# Vector of site numbers"
+"0","site_numbers <- c(""0034"", ""0038"", ""0045"", ""0060"", ""0065, 0072"")"
+"0",""
+"0","# Read and combine all 24-hour data files"
+"0","epa_24hr_clean <- bind_rows("
+"0","  lapply(site_numbers, function(site) {"
+"0","    read_csv(paste0(""epa_pm25_site_"", site, "".csv"")) %>%"
+"0","      filter(sample_duration == ""24 HOUR"") %>%"
+"0","      mutate("
+"0","        site_number = site,"
+"0","        date = as.Date(date_local),"
+"0","        pm25 = sample_measurement"
+"0","      ) %>%"
+"0","      select(site_number, date, pm25)"
+"0","  })"
+"0",")"
+"2","[1mRows: [22m[34m4429[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qualifie...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, sample_d...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"2","[1mRows: [22m[34m4492[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qualifie...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, sample_d...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"2","[1mRows: [22m[34m4431[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qualifie...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, sample_d...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"2","[1mRows: [22m[34m4433[39m [1mColumns: [22m[34m29[39m
+"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (12): county_code, site_number, datum, parameter, units_of_measure, sample_duration, sample_frequency, qualifie...
+[32mdbl[39m  (11): state_code, parameter_code, poc, latitude, longitude, sample_measurement, units_of_measure_code, sample_d...
+[33mlgl[39m   (1): uncertainty
+[34mdate[39m  (3): date_local, date_gmt, date_of_last_change
+[34mtime[39m  (2): time_local, time_gmt
+"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"

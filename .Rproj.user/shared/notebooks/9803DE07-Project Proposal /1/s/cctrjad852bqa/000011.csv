@@ -1,0 +1,11 @@
+"0","site_0038 <- EPA_data_1hrContinuous_DailyAvg %>%"
+"0","  filter(Site == ""0038"")"
+"2","G1;H1;Errorh: object 'Site' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","write_csv(site_0038, ""EPA_PM25_site_0038_daily_avg.csv"")"
+"2","G1;H1;Errorh: object 'site_0038' not found
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"

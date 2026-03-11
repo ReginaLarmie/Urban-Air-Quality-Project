@@ -390,6 +390,7 @@ figA_table %>% group_by(Site) %>% slice_head(n = 5)
 
 ```
 
+# Scatterplot of EPA FRM vs EPA Continuous PM2.5 with regression
 ```{r}
 readr::write_csv(figA_table, "figs/figA_epa_fem_vs_frm_table.csv")
 
@@ -428,12 +429,9 @@ ggplot(df, aes(PM25_FRM, PM25_FEM)) +
       axis.text  = element_text(size = 12),
       panel.grid.minor = element_blank()
     )
-}
-
-
 ```
 
-
+# EPA FEM vs FRM 6-panel comparison plot
 ```{r epa-6panel, fig.width=13, fig.height=10}
 
 stopifnot(all(c("Site","Date","PM25_FRM","PM25_FEM","panel_min","panel_max") %in% names(figA_table)))
@@ -492,10 +490,7 @@ p_figA <- ggplot(figA_table, aes(PM25_FRM, PM25_FEM)) +
 dir.create("figs", showWarnings = FALSE)
 ggsave("figs/figA_epa_fem_vs_frm_from_table.png", p_figA, width = 13, height = 10, dpi = 320)
 p_figA
-
 ```
-
-
 
 # EPA site‑to‑site agreement vs distance
 ```{r epa-r2-vs-distance, fig.width=7, fig.height=5}
@@ -537,6 +532,7 @@ p1 <- ggplot(epa_r2dist_24hr, aes(Distance_km, R2)) +
 ggsave("figs/fig_epa_r2_vs_distance_24hr.png", p1, width = 7, height = 5, dpi = 300)
 p1
 ```
+
 # Map: EPA sites+CLEANinCLE devices+Cleveland boundary
 ```{r map-rds, fig.width=8, fig.height=6}
 # Load saved files you already created
@@ -613,16 +609,15 @@ p_map <- ggplot() +
 dir.create("figs", showWarnings = FALSE)
 ggsave("figs/map_cleveland_numbered.png", p_map, width = 8, height = 6, dpi = 320)
 p_map
-
 ```
 
-```{r}
-## ---- map-epa-cinc, message=FALSE, warning=FALSE, fig.width=10, fig.height=7 ----
+# Map of EPA sites and CLEANinCLE devices in Cuyahoga County
+```{r map-epa-cinc, message=FALSE, warning=FALSE, fig.width=10, fig.height=7}
 library(sf)
 library(dplyr)
 library(ggplot2)
 library(ggrepel)
-library(tigris)     # boundaries
+library(tigris)   
 options(tigris_use_cache = TRUE, tigris_class = "sf")
 
 # --- 1) Convert your coordinates to sf points (WGS84) ---
@@ -675,10 +670,9 @@ p_map <- ggplot() +
 dir.create("figs", showWarnings = FALSE)
 ggsave("figs/map_epa_cinc_cuyahoga.png", p_map, width = 10, height = 7, dpi = 320)
 p_map
-
 ```
 
-# CLEANinCLE Data
+# CLEANinCLE Data loading and preprocessing
 ```{r}
 library(tidyverse)
 library(lubridate)
@@ -717,12 +711,9 @@ cinc_locations <- pm25_rows %>%
             device_eui, location_name,
             latitude, longitude) %>%
   distinct()
-
 ```
 
-
 # Closest EPA sites vs. CinC
-
 ```{r build-nearest-epa, message=FALSE}
 # Requires epa_coords from your earlier EPA section
 #   epa_coords: Site, Latitude, Longitude
@@ -768,7 +759,6 @@ epa_fem_on_frm <- epa_hourly_daily_std %>% semi_join(frm_dates, by = "Date")
 cinc_vs_epa_fem_on_frm <- cinc_daily_map %>%
   inner_join(epa_fem_on_frm, by = c("epa_site" = "Site", "date" = "Date")) %>%
   rename(pm25_cinc = pm25)
-
 ```
 
 #
@@ -862,10 +852,9 @@ plot_cinc_vs_epa <- function(df,
 
   p
 }
-
 ```
 
-# Comparism
+# CinC vs EPA PM2.5 comparison plots
 ```{r cinc-epa-plots, message=FALSE, fig.width=10, fig.height=22}
 
 # A) CinC vs EPA FRM
@@ -904,10 +893,9 @@ p_fem_on_frm <- plot_cinc_vs_epa(
 p_frm; p_fem; p_fem_on_frm
 ```
 
-
-# 
+# Combined regression summary table (CinC vs EPA)
 ```{r}
-# Quick combined table of regression results across the three comparisons
+# Combined table of regression results across the three comparisons
 tbl_frm <- readr::read_csv("figs/cinc_vs_epa_frm_by_site_site_stats.csv", show_col_types = FALSE) %>%
   mutate(comparison = "CinC vs EPA FRM")
 tbl_fem <- readr::read_csv("figs/cinc_vs_epa_fem_by_site_site_stats.csv", show_col_types = FALSE) %>%
@@ -954,11 +942,9 @@ r2_fem$comparison        <- "CinC vs EPA FEM"
 r2_fem_on_frm$comparison <- "CinC vs EPA FEM on FRM days"
 
 r2_all <- bind_rows(r2_frm, r2_fem, r2_fem_on_frm)
-
 ```
 
-
-# Agreement by Distance (Bar Chart)
+# CinC–EPA Agreement by Distance (Bar Chart)
 ```{r}
 # Assign bins
 r2_all <- r2_all %>%
@@ -998,7 +984,6 @@ p_bins <- ggplot(r2_summary, aes(x = dist_bin, y = avg_r2, fill = comparison)) +
 ggsave("figs/fig_r2_by_distance_bin.png", p_bins, width = 8, height = 5.5, dpi = 320)
 p_bins
 ```
-
 
 # CLEANinCLE Pairwise Comparism
 ```{r cinc-16x16-matrix, fig.width=22, fig.height=22, echo=FALSE, message=FALSE, warning=FALSE}
@@ -1088,21 +1073,19 @@ h <- max(22, n_dev * 2.5)   # height in inches
 ggsave("figs/fig_cinc_pairwise_device_full_labels.png", matrix_plot, width = w, height = h, dpi = 300)
 
 matrix_plot
-
 ```
 
 
 ```{r}
-# --- CinC vs EPA: R² summary tables (FRM-restricted & FEM-restricted) ---
-
+# CinC vs EPA: R² summary tables (FRM-restricted & FEM-restricted)
 library(dplyr)
 library(readr)
 
 # sanity checks (these should already exist from your pipeline)
 ("cinc_vs_epa_cont_on_filter_days")
-("epa_hourly_daily_std"))
-(exists("epa_24hr_daily_std")
-(exists("cinc_daily_map")
+("epa_hourly_daily_std")
+(exists("epa_24hr_daily_std"))
+(exists("cinc_daily_map"))
 
 # helper to compute R² safely
 r2_safe <- function(x, y) {

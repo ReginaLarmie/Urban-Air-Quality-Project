@@ -81,8 +81,6 @@ epa_all <- map_dfr(epa_sites, read_epa_site)
 
 # Quick sanity peek
 epa_all %>% count(site_number, sample_duration)
-
-
 ```
 
 ## 6x6 MATRIX PLOT FOR CONTINOUS DATA
@@ -174,9 +172,9 @@ for (i in seq_len(n_sites)) {
 grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
 
 print(grid_plot)
+```
 
 # Daily FRM (24‑hr) & FEM (hourly→daily)
-
 ```{r epa-averages}
 epa_24hr_daily <- epa_all %>%
   filter(sample_duration == "24 HOUR") %>%
@@ -310,7 +308,6 @@ for (i in seq_len(n_sites)) {
 grid_plot <- grid.arrange(grobs = plot_matrix, ncol = n_sites, nrow = n_sites)
 
 print(grid_plot)
-
 ```
 
 

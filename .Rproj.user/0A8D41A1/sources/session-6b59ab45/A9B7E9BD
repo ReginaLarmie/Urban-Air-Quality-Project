@@ -1,7 +1,7 @@
 {
     "id": "A9B7E9BD",
-    "path": null,
-    "project_path": null,
+    "path": "~/Documents/R_Projects/Air_pollution_Projects/0_notebooks/Urban Air Quality Research.Rmd",
+    "project_path": "0_notebooks/Urban Air Quality Research.Rmd",
     "type": "r_markdown",
     "hash": "0",
     "contents": "",
@@ -13,8 +13,8 @@
         "tempName": "Untitled4",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "1843,0",
-        "scrollLine": "0",
+        "cursorPosition": "964,30",
+        "scrollLine": "942",
         "rmdVisualMode": "false",
         "rmdVisualWrapConfigured": "true",
         "docOutlineVisible": "1",
@@ -24,11 +24,11 @@
         "docOutlineSize": "123"
     },
     "folds": "",
-    "lastKnownWriteTime": 0,
-    "encoding": "",
+    "lastKnownWriteTime": 1773193564,
+    "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1762378025882,
+    "last_content_update": 1773194709266,
     "read_only": false,
     "read_only_alternatives": []
 }

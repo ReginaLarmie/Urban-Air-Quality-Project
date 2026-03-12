@@ -1,8 +1,0 @@
-"0",""
-"0","cat(""Total size (MB):"", round(sum(sizes_mb), 2), ""\n"")"
-"1","Total size (MB):"
-"1"," "
-"1","22.99"
-"1"," "
-"1","
-"

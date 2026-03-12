@@ -1,7 +1,0 @@
-"0","summary_df <- data.frame("
-"0","  Site = c(""0034"", ""0038"", ""0045"", ""0060"", ""0065"", ""0073""),"
-"0","  Slope = c(slope_0034, slope_0038, slope_0045, slope_0060, slope_0065, slope_0073),"
-"0","  Intercept = c(intercept_0034, intercept_0038, intercept_0045, intercept_0060, intercept_0065, intercept_0073),"
-"0","  R2 = c(r_squared_0034, r_squared_0038, r_squared_0045, r_squared_0060, r_squared_0065, r_squared_0073)"
-"0",")"
-"0","summary_df"

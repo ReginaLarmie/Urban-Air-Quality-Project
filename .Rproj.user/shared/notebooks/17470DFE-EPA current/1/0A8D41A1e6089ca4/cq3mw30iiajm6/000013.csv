@@ -1,8 +1,0 @@
-"0",""
-"0",""
-"0","# Option A: set a manual common limit (edit if you like)"
-"0","xy_lim <- c(0, max(epa_cinc_merged$pm25_epa, epa_cinc_merged$pm25_cinc, na.rm = TRUE))"
-"0","xy_lim[2] <- ceiling(xy_lim[2] / 5) * 5  # round up to nearest 5"
-"0",""
-"0","# Option B: if you prefer to clip extremes (e.g., 0–40 µg/m³)"
-"0","# xy_lim <- c(0, 40)"

@@ -1,8 +1,0 @@
-"0","# CinC wide (device columns). If you want only a subset, filter first."
-"0","cinc_wide <- cinc_daily %>%"
-"0","  pivot_wider(names_from = device_number, values_from = pm25_cinc)"
-"0",""
-"0","write_csv(cinc_wide, ""tables/cinc_wide_daily.csv"")"
-"0","dim(cinc_wide); head(cinc_wide)"
-"1","[1] 204  28
-"

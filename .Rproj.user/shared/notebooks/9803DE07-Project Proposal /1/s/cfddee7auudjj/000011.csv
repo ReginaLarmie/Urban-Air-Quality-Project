@@ -1,3 +1,0 @@
-"0",""
-"0","# Save each to its own CSV file"
-"0","walk2(epa_data_list, names(epa_data_list), ~ write_csv(.x, paste0(""epa_pm25_site_"", .y, "".csv"")))"

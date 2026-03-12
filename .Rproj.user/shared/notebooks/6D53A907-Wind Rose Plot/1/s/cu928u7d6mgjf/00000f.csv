@@ -1,5 +1,0 @@
-"0","tbl_cinc_vs_epa_frm_wR2 <- tbl_cinc_vs_epa_frm %>%"
-"0","  left_join(summ_frm %>% select(Site, n, slope, intercept, r2),"
-"0","            by = ""Site"")"
-"0",""
-"0","readr::write_csv(tbl_cinc_vs_epa_frm_wR2, ""tables/cinc_vs_epa_frm_24hr_with_site_stats.csv"")"

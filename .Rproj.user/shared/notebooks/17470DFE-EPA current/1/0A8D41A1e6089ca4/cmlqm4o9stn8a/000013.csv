@@ -1,7 +1,0 @@
-"0","# View close but low-correlated sensor pairs"
-"0","low_agreement_close_distance %>%"
-"0","  select(device_number_1, location_name.x, "
-"0","         device_number_2, location_name.y, "
-"0","         distance_m, r2) %>%"
-"0","  arrange(r2) %>%"
-"0","  View()"

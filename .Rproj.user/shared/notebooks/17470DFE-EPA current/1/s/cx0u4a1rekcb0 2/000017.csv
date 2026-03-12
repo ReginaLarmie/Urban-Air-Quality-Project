@@ -1,5 +1,0 @@
-"0","# Step 1: Rename columns for clarity"
-"0","CinC_clean <- CinC_pm25 %>%"
-"0","  rename("
-"0","    pm25_CinC = PM25"
-"0","  )"

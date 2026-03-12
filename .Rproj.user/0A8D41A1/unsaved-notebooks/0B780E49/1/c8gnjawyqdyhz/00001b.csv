@@ -1,6 +1,0 @@
-"0",""
-"0","# Highest value (overall, Jan 1–14)"
-"0","highest_pm25 <- cinc_jan1_14 %>%"
-"0","  slice_max(value, n = 1, with_ties = FALSE)"
-"0",""
-"0","highest_pm25"

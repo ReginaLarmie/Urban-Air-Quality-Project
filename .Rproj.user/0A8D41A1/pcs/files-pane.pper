@@ -1,13 +1,13 @@
 {
     "sortOrder": [
         {
-            "columnIndex": 2,
-            "ascending": true
+            "columnIndex": 4,
+            "ascending": false
         },
         {
-            "columnIndex": 4,
+            "columnIndex": 2,
             "ascending": false
         }
     ],
-    "path": "~/Documents/R_Projects/Air_pollution_Projects/0_outputs/figures"
+    "path": "~/Documents/R_Projects/Air_pollution_Projects/0_archive/CinC Files_summer 2025"
 }

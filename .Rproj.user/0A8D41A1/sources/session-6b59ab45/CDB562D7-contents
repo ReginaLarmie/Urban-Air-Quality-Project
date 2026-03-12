@@ -2559,8 +2559,6 @@ p_facets <- ggplot(plot_data, aes(pm25_epa, pm25_cinc)) +
 
 p_facets
 
-
-
 ```
 
 

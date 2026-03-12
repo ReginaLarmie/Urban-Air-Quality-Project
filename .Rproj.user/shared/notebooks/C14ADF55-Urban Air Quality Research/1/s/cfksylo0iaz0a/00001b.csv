@@ -1,3 +1,0 @@
-"0",""
-"0","  library(writexl)"
-"0","write_xlsx(cinc_table, ""cinc_table.xlsx"")"

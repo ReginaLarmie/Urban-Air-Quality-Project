@@ -1,4 +1,98 @@
+#################################################
+# R / RStudio
+#################################################
 
+# RStudio project metadata
 .Rproj.user/
 
-.Rproj.user/
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+*.Rhistory
+
+# Temporary RStudio files
+*.Rproj.user
+
+#################################################
+# Python (if used)
+#################################################
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+#################################################
+# Quarto / RMarkdown
+#################################################
+
+# Intermediate rendering files
+*_files/
+*_cache/
+
+# LaTeX intermediates from PDF rendering
+*.aux
+*.log
+*.out
+*.toc
+
+#################################################
+# Operating System files
+#################################################
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+#################################################
+# Editor / IDE files
+#################################################
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+#################################################
+# Data that should NOT go in Git
+#################################################
+
+# Large raw datasets (adjust if needed)
+*.zip
+*.tar
+*.gz
+*.7z
+
+# Temporary downloads
+*.tmp
+*.temp
+
+#################################################
+# Logs
+#################################################
+
+*.log
+
+#################################################
+# Package environments
+#################################################
+
+# Python virtual environments
+venv/
+env/
+.venv/
+
+#################################################
+# Misc
+#################################################
+
+# Backup files
+*~
+*.bak
+*.swp
